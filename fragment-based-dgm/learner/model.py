@@ -6,7 +6,7 @@ from torch.nn import functional as F
 from torch.autograd import Variable
 from torch.nn.utils.rnn import pack_padded_sequence, pad_packed_sequence
 
-
+#test add comment
 class Encoder(nn.Module):
     def __init__(self, input_size, embed_size,
                  hidden_size, hidden_layers, latent_size,
