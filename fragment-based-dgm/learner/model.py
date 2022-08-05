@@ -88,9 +88,10 @@ class Decoder(nn.Module):
 
 ### MLP predictor class
 class MLP(nn.Module):
-    def __init__(self, latent_size):
+    def __init__(self, latent_size, use_gpu):
         super(MLP, self).__init__()
         self.latent_size = latent_size
+        self.use_gpu = use_gpu
 
         self.layers = nn.Sequential(
             nn.Linear(latent_size, 64),
@@ -142,7 +143,8 @@ class Frag2Mol(nn.Module):
             output_size=self.input_size)
         ### MLP predictor initialise
         self.mlp = MLP(
-            latent_size=self.latent_size
+            latent_size=self.latent_size,
+            use_gpu=self.use_gpu
         )
 
     def forward(self, inputs, lengths):
