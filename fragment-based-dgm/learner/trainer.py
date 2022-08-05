@@ -157,9 +157,8 @@ class Trainer:
 
             self.optimizer.step()
             ### Teddy Code
-            print("Epoch loss: ", epoch_loss)
-            print("len: ", len(loader))
-            print("Dataset:", type(data))
+            if idx == 0 or idx % 1000 == 0:
+                print("batch loss: ", epoch_loss)
             ###
         return epoch_loss / len(loader)
 
