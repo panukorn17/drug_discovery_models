@@ -158,7 +158,7 @@ class Trainer:
             self.optimizer.step()
             ### Teddy Code
             if idx == 0 or idx % 1000 == 0:
-                print("batch loss: ", epoch_loss)
+                print("batch loss: ", epoch_loss/(idx+1))
             ###
         return epoch_loss / len(loader)
 
