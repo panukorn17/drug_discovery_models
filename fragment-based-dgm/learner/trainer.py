@@ -16,6 +16,8 @@ from .sampler import Sampler
 from utils.filesystem import load_dataset
 from utils.postprocess import score_samples
 
+### Import dataset
+from learner.dataset import FragmentDataset
 
 SCORES = ["validity", "novelty", "uniqueness"]
 
@@ -117,6 +119,7 @@ class Trainer:
         ###Teddy Code
         mu_stack = torch.empty((32,100))
         data_sample = []
+        dataset = FragmentDataset(self.config)
         ###
         self.model.train()
         epoch_loss = 0
@@ -126,7 +129,7 @@ class Trainer:
 
         #for idx, (src, tgt, lengths) in enumerate(loader):
         ### Teddy Code
-        for idx, (src, tgt, lengths, data) in enumerate(loader):
+        for idx, (src, tgt, lengths, data_index) in enumerate(loader):
             ###
             self.optimizer.zero_grad()
 
@@ -137,7 +140,8 @@ class Trainer:
 
             output, mu, sigma, z, pred = self.model(src, lengths)
             ### Insert Label
-            labels = torch.tensor(data.logP.values)
+            molecules = dataset.data.iloc[data_index]
+            labels = torch.tensor(molecules.logP.values)
             ###
             loss = self.criterion(output, tgt, mu, sigma, pred, labels, epoch)
             loss.backward()
