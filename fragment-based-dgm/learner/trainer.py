@@ -135,17 +135,11 @@ class Trainer:
                 src = src.cuda()
                 tgt = tgt.cuda()
 
-            output, mu, sigma = self.model(src, lengths)
-
-            ###Teddy Code
-            data_sample.append(list(data))
-            mu_stack = torch.cat((mu_stack, mu), 0)
-            print(len(mu_stack))
-            if len(mu_stack) > 10000:
-                return data_sample, mu_stack
+            output, mu, sigma, z, pred = self.model(src, lengths)
+            ### Insert Label
+            labels = torch.tensor(data.logP.values)
             ###
-
-            loss = self.criterion(output, tgt, mu, sigma, epoch)
+            loss = self.criterion(output, tgt, mu, sigma, pred, labels, epoch)
             loss.backward()
             clip_grad_norm_(self.model.parameters(),
                             self.config.get('clip_norm'))

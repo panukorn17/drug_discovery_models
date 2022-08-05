@@ -86,6 +86,23 @@ class Decoder(nn.Module):
         output = self.rnn2out(hidden)
         return output, state
 
+### MLP predictor class
+class MLP(nn.Module):
+    def __init__(self, latent_size):
+        super(MLP, self).__init__()
+        self.latent_size = latent_size
+
+        self.layers = nn.Sequential(
+            nn.Linear(latent_size, 64),
+            nn.ReLU(),
+            nn.Linear(64, 32),
+            nn.ReLU(),
+            nn.Linear(32, 1)
+        )
+
+    def forward(self, x):
+        x = self.layers(x)
+        return x
 
 class Frag2Mol(nn.Module):
     def __init__(self, config, vocab):
@@ -123,19 +140,27 @@ class Frag2Mol(nn.Module):
             hidden_layers=self.hidden_layers,
             dropout=self.dropout,
             output_size=self.input_size)
+        ### MLP predictor initialise
+        self.mlp = MLP(
+            latent_size=self.latent_size
+        )
 
     def forward(self, inputs, lengths):
         batch_size = inputs.size(0)
         embeddings = self.embedder(inputs)
         embeddings1 = F.dropout(embeddings, p=self.dropout, training=self.training)
         z, mu, sigma = self.encoder(inputs, embeddings1, lengths)
+        ### Add Property Predictor
+        z_sum = z[0] + z[1]
+        pred = self.mlp(Variable(z_sum))
+        ###
         state = self.latent2rnn(z)
         state = state.view(self.hidden_layers, batch_size, self.hidden_size)
         embeddings2 = F.dropout(embeddings, p=self.dropout, training=self.training)
         output, state = self.decoder(embeddings2, state, lengths)
         #return output, mu, sigma
         ### Teddy Code
-        return output, mu, sigma, z
+        return output, mu, sigma, z, pred
 
     def load_embeddings(self):
         filename = f'emb_{self.embed_size}.dat'
@@ -149,8 +174,10 @@ class Loss(nn.Module):
         super().__init__()
         self.config = config
         self.pad = pad
+        ## Insert loss function
+        self.loss_fn = nn.MSELoss()
 
-    def forward(self, output, target, mu, sigma, epoch):
+    def forward(self, output, target, mu, sigma, pred, labels, epoch):
         output = F.log_softmax(output, dim=1)
 
         # flatten all predictions and targets
@@ -173,4 +200,7 @@ class Loss(nn.Module):
         KL_loss = -0.5 * torch.sum(1 + sigma - mu.pow(2) - sigma.exp())
         # alpha = (epoch + 1)/(self.config.get('num_epochs') + 1)
         # return alpha * CE_loss + (1-alpha) * KL_loss
-        return CE_loss + KL_loss
+
+        ### Compute prediction loss
+        pred_loss = self.loss_fn(pred.type(torch.float64), labels)
+        return CE_loss + KL_loss + pred_loss
