@@ -140,12 +140,15 @@ class Trainer:
 
             output, mu, sigma, z, pred = self.model(src, lengths)
             ### Insert Label
-            print(data_index)
-            print(pred)
+            #print(data_index)
+            #print(pred)
             molecules = dataset.data.iloc[list(data_index)]
             labels = torch.tensor(molecules.logP.values)
             ###
-            loss = self.criterion(output, tgt, mu, sigma, pred, labels, epoch)
+            if self.config.get('use_gpu'):
+                loss = self.criterion(output, tgt, mu, sigma, pred, labels.cuda(), epoch)
+            else:
+                loss = self.criterion(output, tgt, mu, sigma, pred, labels, epoch)
             loss.backward()
             clip_grad_norm_(self.model.parameters(),
                             self.config.get('clip_norm'))
