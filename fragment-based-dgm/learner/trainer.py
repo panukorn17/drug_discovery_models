@@ -141,7 +141,8 @@ class Trainer:
             output, mu, sigma, z, pred = self.model(src, lengths)
             ### Insert Label
             print(data_index)
-            molecules = dataset.data.iloc[data_index]
+            print(pred)
+            molecules = dataset.data.iloc[list(data_index)]
             labels = torch.tensor(molecules.logP.values)
             ###
             loss = self.criterion(output, tgt, mu, sigma, pred, labels, epoch)
