@@ -158,7 +158,7 @@ class Trainer:
             self.optimizer.step()
             ### Teddy Code
             if idx == 0 or idx % 1000 == 0:
-                print("batch loss: ", epoch_loss/(idx+1))
+                print("batch ", idx, " loss: ", epoch_loss/((idx+1)*len(data_index)))
             ###
         return epoch_loss / len(loader)
 
@@ -199,8 +199,8 @@ class Trainer:
             start = time.time()
 
             ### Teddy code
-            mu_stack = self._train_epoch(epoch, loader)
-            return mu_stack
+            #mu_stack = self._train_epoch(epoch, loader)
+            #return mu_stack
             ###
             epoch_loss = self._train_epoch(epoch, loader)
             self.losses.append(epoch_loss)
