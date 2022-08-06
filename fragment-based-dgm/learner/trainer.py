@@ -146,9 +146,9 @@ class Trainer:
             labels = torch.tensor(molecules.logP.values)
             ###
             if self.config.get('use_gpu'):
-                loss = self.criterion(output, tgt, mu, sigma, pred, labels.cuda(), epoch)
+                loss, CE_loss, KL_loss, pred_loss = self.criterion(output, tgt, mu, sigma, pred, labels.cuda(), epoch)
             else:
-                loss = self.criterion(output, tgt, mu, sigma, pred, labels, epoch)
+                loss, CE_loss, KL_loss, pred_loss = self.criterion(output, tgt, mu, sigma, pred, labels, epoch)
             loss.backward()
             clip_grad_norm_(self.model.parameters(),
                             self.config.get('clip_norm'))
@@ -159,6 +159,7 @@ class Trainer:
             ### Teddy Code
             if idx == 0 or idx % 5000 == 0:
                 print("batch ", idx, " loss: ", epoch_loss/(idx+1))
+                print("CE Loss ", CE_loss, " KL Loss: ", KL_loss, "Prediction Loss:", pred_loss)
             ###
         return epoch_loss / len(loader)
 
