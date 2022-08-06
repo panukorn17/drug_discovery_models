@@ -149,7 +149,7 @@ class Trainer:
                 loss, CE_loss, KL_loss, pred_loss = self.criterion(output, tgt, mu, sigma, pred, labels.cuda(), epoch)
             else:
                 loss, CE_loss, KL_loss, pred_loss = self.criterion(output, tgt, mu, sigma, pred, labels, epoch)
-            loss.backward()
+            loss.double().backward()
             clip_grad_norm_(self.model.parameters(),
                             self.config.get('clip_norm'))
 
