@@ -205,5 +205,5 @@ class Loss(nn.Module):
         # return alpha * CE_loss + (1-alpha) * KL_loss
 
         ### Compute prediction loss
-        pred_loss = self.loss_fn(pred.type(torch.float64).squeeze(-1), labels)
+        pred_loss = 1/len(labels) * torch.sum((pred.type(torch.float64).squeeze(-1) - labels)**2)
         return CE_loss + KL_loss + pred_loss, CE_loss, KL_loss, pred_loss
