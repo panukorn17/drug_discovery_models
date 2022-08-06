@@ -95,9 +95,9 @@ class MLP(nn.Module):
 
         self.layers = nn.Sequential(
             nn.Linear(latent_size, 64),
-            nn.ReLU(),
+            nn.Tanh(),
             nn.Linear(64, 32),
-            nn.ReLU(),
+            nn.Tanh(),
             nn.Linear(32, 1)
         )
 
@@ -154,7 +154,7 @@ class Frag2Mol(nn.Module):
         z, mu, sigma = self.encoder(inputs, embeddings1, lengths)
         ### Add Property Predictor
         z_sum = z[0] + z[1]
-        pred = self.mlp(z)
+        pred = self.mlp(z.view(-1))
         ###
         state = self.latent2rnn(z)
         state = state.view(self.hidden_layers, batch_size, self.hidden_size)
