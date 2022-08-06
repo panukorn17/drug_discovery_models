@@ -154,7 +154,8 @@ class Frag2Mol(nn.Module):
         z, mu, sigma = self.encoder(inputs, embeddings1, lengths)
         ### Add Property Predictor
         z_sum = z[0] + z[1]
-        pred = self.mlp(z.view(-1))
+        z_sum = F.normalize(z_sum)
+        pred = self.mlp(z_sum)
         ###
         state = self.latent2rnn(z)
         state = state.view(self.hidden_layers, batch_size, self.hidden_size)
