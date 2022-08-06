@@ -143,7 +143,7 @@ class Trainer:
             #print(data_index)
             #print(pred)
             molecules = dataset.data.iloc[list(data_index)]
-            labels = torch.tensor(molecules.logP.values)
+            labels = torch.tensor(molecules.logP.values, requires_grad=True)
             ###
             if self.config.get('use_gpu'):
                 loss, CE_loss, KL_loss, pred_loss = self.criterion(output, tgt, mu, sigma, pred, labels.cuda(), epoch)
