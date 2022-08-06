@@ -94,11 +94,11 @@ class MLP(nn.Module):
         self.use_gpu = use_gpu
 
         self.layers = nn.Sequential(
-            nn.Linear(latent_size, 64),
+            nn.Linear(latent_size, 64).float(),
             nn.Tanh(),
-            nn.Linear(64, 32),
+            nn.Linear(64, 32).float(),
             nn.Tanh(),
-            nn.Linear(32, 1)
+            nn.Linear(32, 1).float()
         )
 
     def forward(self, x):
