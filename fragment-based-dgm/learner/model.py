@@ -55,6 +55,25 @@ class Encoder(nn.Module):
         return Variable(state).cuda() if self.use_gpu else Variable(state)
 
 
+### MLP predictor class
+class MLP(nn.Module):
+    def __init__(self, latent_size, use_gpu):
+        super(MLP, self).__init__()
+        self.latent_size = latent_size
+        self.use_gpu = use_gpu
+
+        self.layers = nn.Sequential(
+            nn.Linear(latent_size, 64).float(),
+            nn.Tanh(),
+            nn.Linear(64, 32).float(),
+            nn.Tanh(),
+            nn.Linear(32, 1).float()
+        )
+
+    def forward(self, x):
+        x = self.layers(x)
+        return Variable(x).cuda() if self.use_gpu else Variable(x)
+
 class Decoder(nn.Module):
     def __init__(self, embed_size, latent_size, hidden_size,
                  hidden_layers, dropout, output_size):
@@ -85,25 +104,6 @@ class Decoder(nn.Module):
         hidden, _ = pad_packed_sequence(hidden, batch_first=True)
         output = self.rnn2out(hidden)
         return output, state
-
-### MLP predictor class
-class MLP(nn.Module):
-    def __init__(self, latent_size, use_gpu):
-        super(MLP, self).__init__()
-        self.latent_size = latent_size
-        self.use_gpu = use_gpu
-
-        self.layers = nn.Sequential(
-            nn.Linear(latent_size, 64).float(),
-            nn.Tanh(),
-            nn.Linear(64, 32).float(),
-            nn.Tanh(),
-            nn.Linear(32, 1).float()
-        )
-
-    def forward(self, x):
-        x = self.layers(x)
-        return Variable(x).cuda() if self.use_gpu else Variable(x)
 
 class Frag2Mol(nn.Module):
     def __init__(self, config, vocab):
@@ -205,5 +205,5 @@ class Loss(nn.Module):
         # return alpha * CE_loss + (1-alpha) * KL_loss
 
         ### Compute prediction loss
-        pred_loss = 1/len(labels) * torch.sum((pred.type(torch.float32).squeeze(-1) - labels)**2)
+        pred_loss = self.loss_fn(pred.type(torch.float32).squeeze(-1), labels)
         return CE_loss + KL_loss, CE_loss, KL_loss, pred_loss
