@@ -212,8 +212,11 @@ class Trainer:
             ### Add Property Predictor
             self.MLP_model.train()
             mu_norm = F.normalize(mu_stack)
-            labels = dataset.data.iloc[list(data_index_lst)].logP
+            data_index_lst_final = [item for sublist in data_index_lst for item in sublist]
+            labels = dataset.data.iloc[data_index_lst_final].logP
             labels = torch.tensor(labels.values, requires_grad=True).float()
+            print("mu_norm len", len(mu_norm))
+            print("labels len", len(mu_norm))
             train_losses = []
             for i, (mu_norm_input) in enumerate(mu_norm):
                 preds = self.MLP_model(mu_norm_input)
