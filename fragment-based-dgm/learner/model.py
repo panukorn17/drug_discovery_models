@@ -81,7 +81,6 @@ class MLP(nn.Module):
         x = self.linear2(x)
         x = self.relu(x)
         x = self.linear3(x)
-        x = self.softplus(x)
         return Variable(x.view(-1)).cuda() if self.use_gpu else Variable(x.view(-1))
 
 class Decoder(nn.Module):
