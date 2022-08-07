@@ -64,9 +64,9 @@ class MLP(nn.Module):
 
         self.layers = nn.Sequential(
             nn.Linear(latent_size, 64).float(),
-            nn.ReLU(),
+            nn.Tanh(),
             nn.Linear(64, 32).float(),
-            nn.ReLU(),
+            nn.Tanh(),
             nn.Linear(32, 1).float()
         )
 
