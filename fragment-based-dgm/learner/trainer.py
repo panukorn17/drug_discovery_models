@@ -216,7 +216,7 @@ class Trainer:
             labels = torch.tensor(labels.values, requires_grad=True).float()
             train_losses = []
             for i, (mu_norm_input) in enumerate(mu_norm):
-                preds = self.MLP_model(F.normalize(mu_norm_input))
+                preds = self.MLP_model(mu_norm_input)
                 if self.config.get('use_gpu'):
                     loss_pred = self.pred_loss(preds.cuda(), labels[i].cuda())
                 else:
