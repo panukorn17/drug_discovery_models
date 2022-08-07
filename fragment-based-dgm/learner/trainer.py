@@ -122,8 +122,8 @@ class Trainer:
     def _train_epoch(self, epoch, loader):
         ###Teddy Code
         mu_stack = torch.empty((32,100))
-        if self.config.get('use_gpu'):
-            mu_stack = torch.empty((32,100)).cuda()
+        #if self.config.get('use_gpu'):
+        #    mu_stack = torch.empty((32,100)).cuda()
         data_index_lst = []
         ###
         self.model.train()
@@ -147,7 +147,7 @@ class Trainer:
             ### Insert Label
             #print(data_index)
             #print(pred)
-            mu_stack = torch.cat((mu_stack, mu), 0)
+            mu_stack = torch.cat((mu_stack, mu.cpu()), 0)
             data_index_lst += list(data_index)
             ###
             loss = self.criterion(output, tgt, mu, sigma, epoch)
