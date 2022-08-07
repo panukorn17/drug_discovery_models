@@ -82,7 +82,7 @@ class MLP(nn.Module):
         x = self.relu(x)
         x = self.linear3(x)
         x = self.relu(x)
-        return Variable(x).cuda() if self.use_gpu else Variable(x)
+        return Variable(x.view(-1)).cuda() if self.use_gpu else Variable(x.view(-1))
 
 class Decoder(nn.Module):
     def __init__(self, embed_size, latent_size, hidden_size,
@@ -215,5 +215,5 @@ class Loss(nn.Module):
         # return alpha * CE_loss + (1-alpha) * KL_loss
 
         ### Compute prediction loss
-        pred_loss = self.loss_fn(pred.type(torch.float32).squeeze(-1), labels)
+        pred_loss = self.loss_fn(pred.type(torch.float32), labels)
         return CE_loss + KL_loss, CE_loss, KL_loss, pred_loss
