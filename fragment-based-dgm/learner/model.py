@@ -81,7 +81,7 @@ class MLP(nn.Module):
         x = self.linear2(x)
         x = self.relu(x)
         x = self.linear3(x)
-        x = self.relu(x)
+        x = self.softplus(x)
         return Variable(x.view(-1)).cuda() if self.use_gpu else Variable(x.view(-1))
 
 class Decoder(nn.Module):
@@ -165,7 +165,7 @@ class Frag2Mol(nn.Module):
         ### Add Property Predictor
         z_sum = z[0] + z[1]
         z_sum = F.normalize(z_sum)
-        pred = self.mlp(mu)
+        pred = self.mlp(F.normalize(mu))
         ###
         state = self.latent2rnn(z)
         state = state.view(self.hidden_layers, batch_size, self.hidden_size)
