@@ -77,12 +77,12 @@ class MLP(nn.Module):
         #)
 
     def forward(self, x):
-        #x = self.linear1(x)
-        #x = self.relu(x)
-        #x = self.linear2(x)
-        #x = self.relu(x)
-        #x = self.linear3(x)
-        x = self.layers(x)
+        x = self.linear1(x)
+        x = self.relu(x)
+        x = self.linear2(x)
+        x = self.relu(x)
+        x = self.linear3(x)
+        #x = self.layers(x)
         return Variable(x.view(-1)).cuda() if self.use_gpu else Variable(x.view(-1))
 
 class Decoder(nn.Module):
