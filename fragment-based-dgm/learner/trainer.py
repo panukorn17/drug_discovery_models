@@ -122,6 +122,8 @@ class Trainer:
     def _train_epoch(self, epoch, loader):
         ###Teddy Code
         mu_stack = torch.empty((32,100))
+        if self.config.get('use_gpu'):
+            mu_stack = torch.empty((32,100)).cuda()
         data_index_lst = []
         ###
         self.model.train()
