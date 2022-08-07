@@ -213,12 +213,12 @@ class Trainer:
             self.MLP_model.train()
             mu_norm = F.normalize(mu_stack)
             labels = dataset.data.iloc[list(data_index_lst)].logP
-            labels = torch.tensor(labels.logP.values, requires_grad=True).float()
+            labels = torch.tensor(labels.values, requires_grad=True).float()
             train_losses = []
             for i, (mu_norm_input) in enumerate(mu_norm):
                 preds = self.MLP_model(F.normalize(mu_norm_input))
                 if self.config.get('use_gpu'):
-                    loss_pred = self.pred_loss(preds, labels[i].cuda())
+                    loss_pred = self.pred_loss(preds.cuda(), labels[i].cuda())
                 else:
                     loss_pred = self.pred_loss(preds, labels[i])
                 self.MLP_optimizer.zero_grad()
