@@ -164,7 +164,7 @@ class Frag2Mol(nn.Module):
         output, state = self.decoder(embeddings2, state, lengths)
         #return output, mu, sigma
         ### Teddy Code
-        return output, mu, sigma, z, pred
+        return output, mu, sigma, z
 
     def load_embeddings(self):
         filename = f'emb_{self.embed_size}.dat'
@@ -179,7 +179,7 @@ class Loss(nn.Module):
         self.config = config
         self.pad = pad
 
-    def forward(self, output, target, mu, sigma, pred, labels, epoch):
+    def forward(self, output, target, mu, sigma, epoch):
         output = F.log_softmax(output, dim=1)
 
         # flatten all predictions and targets

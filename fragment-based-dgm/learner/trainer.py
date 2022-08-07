@@ -148,17 +148,13 @@ class Trainer:
             mu_stack = torch.cat((mu_stack, mu), 0)
             data_index_lst += list(data_index)
             ###
-            if self.config.get('use_gpu'):
-                loss, CE_loss, KL_loss, pred_loss = self.criterion(output, tgt, mu, sigma, pred, labels.cuda(), epoch)
-            else:
-                loss, CE_loss, KL_loss, pred_loss = self.criterion(output, tgt, mu, sigma, pred, labels, epoch)
-            pred_loss.backward()
-            loss.backward()
-            #clip_grad_norm_(self.model.parameters(),
-            #                self.config.get('clip_norm'))
+            loss = self.criterion(output, tgt, mu, sigma, epoch)
 
-            #epoch_loss += loss.item() + pred_loss.item()
-            epoch_loss += pred_loss.item()
+            loss.backward()
+            clip_grad_norm_(self.model.parameters(),
+                            self.config.get('clip_norm'))
+
+            epoch_loss += loss.item()
 
             self.optimizer.step()
             ### Teddy Code
