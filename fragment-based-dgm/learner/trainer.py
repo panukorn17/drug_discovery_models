@@ -219,10 +219,10 @@ class Trainer:
             print("mu_norm len", len(mu_norm))
             print("labels len", len(labels))
             train_losses = []
-            for i, (mu_norm_input) in enumerate(mu_norm[:len(labels)]):
+            for i, (mu_input) in enumerate(mu_norm[:len(labels)]):
                 #if epoch > 0 and self.config.get('use_scheduler'):
                 #    self.MLP_scheduler.step()
-                preds = self.MLP_model(mu_stack)
+                preds = self.MLP_model(mu_input)
                 if self.config.get('use_gpu'):
                     loss_pred = self.pred_loss(preds.cuda(), labels[i].cuda())
                 else:
