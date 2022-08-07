@@ -108,6 +108,7 @@ class Trainer:
         self.optimizer = get_optimizer(config, self.model)
         self.MLP_optimizer = get_optimizer(config, self.MLP_model)
         self.scheduler = get_scheduler(config, self.optimizer)
+        self.MLP_scheduler = get_scheduler(config, self.MLP_optimizer)
         self.criterion = Loss(config, pad=vocab.PAD)
         self.pred_loss = predictor_loss()
 
@@ -219,6 +220,8 @@ class Trainer:
             print("labels len", len(labels))
             train_losses = []
             for i, (mu_norm_input) in enumerate(mu_norm[:len(labels)]):
+                if epoch > 0 and self.config.get('use_scheduler'):
+                    self.MLP_scheduler.step()
                 preds = self.MLP_model(mu_norm_input)
                 if self.config.get('use_gpu'):
                     loss_pred = self.pred_loss(preds.cuda(), labels[i].cuda())
