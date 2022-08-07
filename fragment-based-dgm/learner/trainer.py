@@ -218,7 +218,7 @@ class Trainer:
             print("mu_norm len", len(mu_norm))
             print("labels len", len(labels))
             train_losses = []
-            for i, (mu_norm_input) in enumerate(mu_norm):
+            for i, (mu_norm_input) in enumerate(mu_norm[:len(labels)]):
                 preds = self.MLP_model(mu_norm_input)
                 if self.config.get('use_gpu'):
                     loss_pred = self.pred_loss(preds.cuda(), labels[i].cuda())
@@ -228,6 +228,8 @@ class Trainer:
                 loss_pred.backward()
                 self.MLP_optimizer.step()
                 train_losses.append(loss_pred.item())
+                if i == 0 or i % 1000 == 0:
+                    print("Batch Predictor loss: ", np.mean(train_losses))
                 ###
             print("Predictor loss", np.mean(train_losses))
             self.losses.append(epoch_loss)
