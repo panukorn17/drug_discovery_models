@@ -161,7 +161,7 @@ class Trainer:
             ### Teddy Code
             if idx == 0 or idx % 1000 == 0:
                 print("batch ", idx, " loss: ", epoch_loss/(idx+1))
-                print("mu", mu, "pred ", pred, " labels: ", labels, "loss:", 1/len(labels)*torch.sum((pred - labels.cuda())**2))
+                #print("mu", mu, "pred ", pred, " labels: ", labels, "loss:", 1/len(labels)*torch.sum((pred - labels.cuda())**2))
                 print("CE Loss ", CE_loss, " KL Loss: ", KL_loss, "Prediction Loss:", pred_loss)
             ###
         return epoch_loss / len(loader)
