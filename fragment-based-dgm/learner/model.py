@@ -209,7 +209,6 @@ class predictor_loss(nn.Module):
     def __init__(self):
         super().__init__()
         ## Insert loss function
-        self.loss_fn = F.mse_loss()
 
     def forward(self, preds, labels):
         ### Compute prediction loss
