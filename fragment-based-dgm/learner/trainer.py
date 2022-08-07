@@ -220,17 +220,17 @@ class Trainer:
             print("labels len", len(labels))
             train_losses = []
             for i, (mu_norm_input) in enumerate(mu_norm[:len(labels)]):
-                if epoch > 0 and self.config.get('use_scheduler'):
-                    self.MLP_scheduler.step()
-                preds = self.MLP_model(mu_norm_input)
+                #if epoch > 0 and self.config.get('use_scheduler'):
+                #    self.MLP_scheduler.step()
+                preds = self.MLP_model(mu_stack)
                 if self.config.get('use_gpu'):
                     loss_pred = self.pred_loss(preds.cuda(), labels[i].cuda())
                 else:
                     loss_pred = self.pred_loss(preds, labels[i])
                 self.MLP_optimizer.zero_grad()
                 loss_pred.backward()
-                clip_grad_norm_(self.MLP_model.parameters(),
-                                self.config.get('clip_norm'))
+                #clip_grad_norm_(self.MLP_model.parameters(),
+                #                self.config.get('clip_norm'))
                 self.MLP_optimizer.step()
                 train_losses.append(loss_pred.item())
                 if i == 0 or i % 1000 == 0:
