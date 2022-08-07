@@ -57,23 +57,24 @@ class Encoder(nn.Module):
 
 ### MLP predictor class
 class MLP(nn.Module):
-    def __init__(self, latent_size, use_gpu):
+    def __init__(self, config):
         super(MLP, self).__init__()
-        self.latent_size = latent_size
-        self.use_gpu = use_gpu
-        #self.relu = nn.ReLU()
-        #self.softplus = nn.Softplus()
-        #self.linear1 = nn.Linear(self.latent_size, 16)
-        #self.linear2 = nn.Linear(16, 8)
-        #self.linear3 = nn.Linear(8, 1)
+        self.config = config
+        self.latent_size = config.get('latent_size')
+        self.use_gpu = config.get('use_gpu')
+        self.relu = nn.ReLU()
+        self.softplus = nn.Softplus()
+        self.linear1 = nn.Linear(self.latent_size, 64)
+        self.linear2 = nn.Linear(64, 32)
+        self.linear3 = nn.Linear(32, 1)
 
-        self.layers = nn.Sequential(
-            nn.Linear(latent_size, 64).float(),
-            nn.Tanh(),
-            nn.Linear(64, 32).float(),
-            nn.Tanh(),
-            nn.Linear(32, 1).float()
-        )
+        #self.layers = nn.Sequential(
+        #    nn.Linear(latent_size, 64).float(),
+        #    nn.Tanh(),
+        #    nn.Linear(64, 32).float(),
+        #    nn.Tanh(),
+        #    nn.Linear(32, 1).float()
+        #)
 
     def forward(self, x):
         #x = self.linear1(x)
@@ -151,22 +152,12 @@ class Frag2Mol(nn.Module):
             hidden_layers=self.hidden_layers,
             dropout=self.dropout,
             output_size=self.input_size)
-        ### MLP predictor initialise
-        self.mlp = MLP(
-            latent_size=self.latent_size,
-            use_gpu=self.use_gpu
-        )
 
     def forward(self, inputs, lengths):
         batch_size = inputs.size(0)
         embeddings = self.embedder(inputs)
         embeddings1 = F.dropout(embeddings, p=self.dropout, training=self.training)
         z, mu, sigma = self.encoder(inputs, embeddings1, lengths)
-        ### Add Property Predictor
-        z_sum = z[0] + z[1]
-        z_sum = F.normalize(z_sum)
-        pred = self.mlp(F.normalize(mu))
-        ###
         state = self.latent2rnn(z)
         state = state.view(self.hidden_layers, batch_size, self.hidden_size)
         embeddings2 = F.dropout(embeddings, p=self.dropout, training=self.training)
@@ -187,8 +178,6 @@ class Loss(nn.Module):
         super().__init__()
         self.config = config
         self.pad = pad
-        ## Insert loss function
-        self.loss_fn = nn.MSELoss()
 
     def forward(self, output, target, mu, sigma, pred, labels, epoch):
         output = F.log_softmax(output, dim=1)
@@ -214,6 +203,16 @@ class Loss(nn.Module):
         # alpha = (epoch + 1)/(self.config.get('num_epochs') + 1)
         # return alpha * CE_loss + (1-alpha) * KL_loss
 
+        return CE_loss + KL_loss
+
+class predictor_loss(nn.Module):
+    def __init__(self):
+        super().__init__()
+        ## Insert loss function
+        self.loss_fn = F.mse_Loss()
+
+    def forward(self, preds, labels):
         ### Compute prediction loss
-        pred_loss = self.loss_fn(pred.type(torch.float32), labels)
-        return CE_loss + KL_loss, CE_loss, KL_loss, pred_loss
+        pred_loss = (preds.type(torch.float32) - labels)**2
+
+        return pred_loss

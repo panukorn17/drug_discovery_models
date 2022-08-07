@@ -7,11 +7,12 @@ from torch.autograd import Variable
 from torch.nn.utils import clip_grad_norm_
 from torch.optim import Adam
 from torch.optim.lr_scheduler import StepLR
+from torch.nn import functional as F
 
 from tensorboardX import SummaryWriter
 
 
-from .model import Loss, Frag2Mol
+from .model import Loss, predictor_loss, Frag2Mol, MLP
 from .sampler import Sampler
 from utils.filesystem import load_dataset
 from utils.postprocess import score_samples
@@ -103,9 +104,12 @@ class Trainer:
         self.vocab = vocab
 
         self.model = Frag2Mol(config, vocab)
+        self.MLP_model = MLP(config)
         self.optimizer = get_optimizer(config, self.model)
+        self.MLP_optimizer = get_optimizer(config, self.MLP_model)
         self.scheduler = get_scheduler(config, self.optimizer)
         self.criterion = Loss(config, pad=vocab.PAD)
+        self.pred_loss = predictor_loss()
 
         if self.config.get('use_gpu'):
             self.model = self.model.cuda()
@@ -118,8 +122,7 @@ class Trainer:
     def _train_epoch(self, epoch, loader):
         ###Teddy Code
         mu_stack = torch.empty((32,100))
-        data_sample = []
-        dataset = FragmentDataset(self.config)
+        data_index_lst = []
         ###
         self.model.train()
         epoch_loss = 0
@@ -138,19 +141,19 @@ class Trainer:
                 src = src.cuda()
                 tgt = tgt.cuda()
 
-            output, mu, sigma, z, pred = self.model(src, lengths)
+            output, mu, sigma, z = self.model(src, lengths)
             ### Insert Label
             #print(data_index)
             #print(pred)
-            molecules = dataset.data.iloc[list(data_index)]
-            labels = torch.tensor(molecules.logP.values, requires_grad=True).float()
+            mu_stack = torch.cat((mu_stack, mu), 0)
+            data_index_lst += list(data_index)
             ###
             if self.config.get('use_gpu'):
                 loss, CE_loss, KL_loss, pred_loss = self.criterion(output, tgt, mu, sigma, pred, labels.cuda(), epoch)
             else:
                 loss, CE_loss, KL_loss, pred_loss = self.criterion(output, tgt, mu, sigma, pred, labels, epoch)
             pred_loss.backward()
-            #loss.backward()
+            loss.backward()
             #clip_grad_norm_(self.model.parameters(),
             #                self.config.get('clip_norm'))
 
@@ -162,9 +165,9 @@ class Trainer:
             if idx == 0 or idx % 1000 == 0:
                 print("batch ", idx, " loss: ", epoch_loss/(idx+1))
                 #print("mu", mu, "pred ", pred, " labels: ", labels, "loss:", 1/len(labels)*torch.sum((pred - labels.cuda())**2))
-                print("CE Loss ", CE_loss, " KL Loss: ", KL_loss, "Prediction Loss:", pred_loss)
+                #print("CE Loss ", CE_loss, " KL Loss: ", KL_loss, "Prediction Loss:", pred_loss)
             ###
-        return epoch_loss / len(loader)
+        return epoch_loss / len(loader), mu_stack, data_index_lst
 
     def _valid_epoch(self, epoch, loader):
         use_gpu = self.config.get('use_gpu')
@@ -198,6 +201,7 @@ class Trainer:
         num_epochs = self.config.get('num_epochs')
 
         logger = TBLogger(self.config)
+        dataset = FragmentDataset(self.config)
 
         for epoch in range(start_epoch, start_epoch + num_epochs):
             start = time.time()
@@ -206,7 +210,25 @@ class Trainer:
             #mu_stack = self._train_epoch(epoch, loader)
             #return mu_stack
             ###
-            epoch_loss = self._train_epoch(epoch, loader)
+            epoch_loss, mu_stack, data_index_lst = self._train_epoch(epoch, loader)
+            ### Add Property Predictor
+            self.MLP_model.train()
+            mu_norm = F.normalize(mu_stack)
+            labels = dataset.data.iloc[list(data_index_lst)].logP
+            labels = torch.tensor(labels.logP.values, requires_grad=True).float()
+            train_losses = []
+            for i, (mu_norm_input) in enumerate(mu_norm):
+                preds = self.MLP_model(F.normalize(mu_norm_input))
+                if self.config.get('use_gpu'):
+                    loss_pred = self.pred_loss(preds, labels[i].cuda())
+                else:
+                    loss_pred = self.pred_loss(preds, labels[i])
+                self.MLP_optimizer.zero_grad()
+                loss_pred.backward()
+                self.MLP_optimizer.step()
+                train_losses.append(loss_pred.item())
+                ###
+            print("Predictor loss", np.mean(train_losses))
             self.losses.append(epoch_loss)
             logger.log('loss', epoch_loss, epoch)
             save_ckpt(self, epoch, filename="last.pt")
