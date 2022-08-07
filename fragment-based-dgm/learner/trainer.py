@@ -216,7 +216,7 @@ class Trainer:
             labels = dataset.data.iloc[data_index_lst_final].logP
             labels = torch.tensor(labels.values, requires_grad=True).float()
             print("mu_norm len", len(mu_norm))
-            print("labels len", len(mu_norm))
+            print("labels len", len(labels))
             train_losses = []
             for i, (mu_norm_input) in enumerate(mu_norm):
                 preds = self.MLP_model(mu_norm_input)
