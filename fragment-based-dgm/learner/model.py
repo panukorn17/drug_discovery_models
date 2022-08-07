@@ -61,26 +61,27 @@ class MLP(nn.Module):
         super(MLP, self).__init__()
         self.latent_size = latent_size
         self.use_gpu = use_gpu
-        self.relu = nn.ReLU()
-        self.softplus = nn.Softplus()
-        self.linear1 = nn.Linear(self.latent_size, 16)
-        self.linear2 = nn.Linear(16, 8)
-        self.linear3 = nn.Linear(8, 1)
+        #self.relu = nn.ReLU()
+        #self.softplus = nn.Softplus()
+        #self.linear1 = nn.Linear(self.latent_size, 16)
+        #self.linear2 = nn.Linear(16, 8)
+        #self.linear3 = nn.Linear(8, 1)
 
-        #self.layers = nn.Sequential(
-        #    nn.Linear(latent_size, 64).float(),
-        #    nn.ReLU(),
-        #    nn.Linear(64, 32).float(),
-        #    nn.Softplus(),
-        #    nn.Linear(32, 1).float()
-        #)
+        self.layers = nn.Sequential(
+            nn.Linear(latent_size, 64).float(),
+            nn.Tanh(),
+            nn.Linear(64, 32).float(),
+            nn.Tanh(),
+            nn.Linear(32, 1).float()
+        )
 
     def forward(self, x):
-        x = self.linear1(x)
-        x = self.relu(x)
-        x = self.linear2(x)
-        x = self.relu(x)
-        x = self.linear3(x)
+        #x = self.linear1(x)
+        #x = self.relu(x)
+        #x = self.linear2(x)
+        #x = self.relu(x)
+        #x = self.linear3(x)
+        x = self.layers(x)
         return Variable(x.view(-1)).cuda() if self.use_gpu else Variable(x.view(-1))
 
 class Decoder(nn.Module):
