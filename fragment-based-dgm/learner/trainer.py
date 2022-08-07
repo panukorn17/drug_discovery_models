@@ -148,7 +148,7 @@ class Trainer:
             #print(data_index)
             #print(pred)
             mu_stack = torch.cat((mu_stack, mu.cpu()), 0)
-            data_index_lst += list(data_index)
+            data_index_lst.append(list(data_index))
             ###
             loss = self.criterion(output, tgt, mu, sigma, epoch)
 
