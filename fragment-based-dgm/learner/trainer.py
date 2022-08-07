@@ -226,6 +226,8 @@ class Trainer:
                     loss_pred = self.pred_loss(preds, labels[i])
                 self.MLP_optimizer.zero_grad()
                 loss_pred.backward()
+                clip_grad_norm_(self.MLP_model.parameters(),
+                                self.config.get('clip_norm'))
                 self.MLP_optimizer.step()
                 train_losses.append(loss_pred.item())
                 if i == 0 or i % 1000 == 0:
