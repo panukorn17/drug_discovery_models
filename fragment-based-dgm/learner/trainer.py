@@ -117,8 +117,6 @@ class Trainer:
 
     def _train_epoch(self, epoch, loader):
         ###Teddy Code
-        mu_stack = torch.empty((32,100))
-        data_sample = []
         dataset = FragmentDataset(self.config)
         ###
         self.model.train()
@@ -143,18 +141,14 @@ class Trainer:
             #print(data_index)
             #print(pred)
             molecules = dataset.data.iloc[list(data_index)]
-            labels = torch.tensor(molecules.logP.values, requires_grad=True).float()
-            ###
-            if self.config.get('use_gpu'):
-                loss, CE_loss, KL_loss, pred_loss = self.criterion(output, tgt, mu, sigma, pred, labels.cuda(), epoch)
-            else:
-                loss, CE_loss, KL_loss, pred_loss = self.criterion(output, tgt, mu, sigma, pred, labels, epoch)
+            labels = torch.tensor(molecules.logP.values)
+            loss, CE_loss, KL_loss, pred_loss = self.criterion(output, tgt, mu, sigma, pred, labels, epoch)
             #pred_loss.backward()
             loss.backward()
             clip_grad_norm_(self.model.parameters(),
                             self.config.get('clip_norm'))
 
-            epoch_loss += loss.item() + pred_loss.item()
+            epoch_loss += loss.item()
             #epoch_loss += pred_loss.item()
 
             self.optimizer.step()

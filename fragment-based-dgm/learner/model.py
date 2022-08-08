@@ -68,11 +68,11 @@ class MLP(nn.Module):
         #self.linear3 = nn.Linear(8, 1)
 
         self.layers = nn.Sequential(
-            nn.Linear(latent_size, 64).float(),
-            nn.Tanh(),
-            nn.Linear(64, 32).float(),
-            nn.Tanh(),
-            nn.Linear(32, 1).float()
+            nn.Linear(latent_size, 64),
+            nn.ReLU(),
+            nn.Linear(64, 32),
+            nn.ReLU(),
+            nn.Linear(32, 1)
         )
 
     def forward(self, x):
@@ -82,7 +82,7 @@ class MLP(nn.Module):
         #x = self.relu(x)
         #x = self.linear3(x)
         x = self.layers(x)
-        return Variable(x.view(-1)).cuda() if self.use_gpu else Variable(x.view(-1))
+        return x
 
 class Decoder(nn.Module):
     def __init__(self, embed_size, latent_size, hidden_size,
@@ -163,9 +163,8 @@ class Frag2Mol(nn.Module):
         embeddings1 = F.dropout(embeddings, p=self.dropout, training=self.training)
         z, mu, sigma = self.encoder(inputs, embeddings1, lengths)
         ### Add Property Predictor
-        z_sum = z[0] + z[1]
-        z_sum = F.normalize(z_sum)
-        pred = self.mlp(F.normalize(mu))
+        mu_norm = F.normalize(mu)
+        pred = self.mlp(Variable(mu_norm.cpu()))
         ###
         state = self.latent2rnn(z)
         state = state.view(self.hidden_layers, batch_size, self.hidden_size)
@@ -215,5 +214,5 @@ class Loss(nn.Module):
         # return alpha * CE_loss + (1-alpha) * KL_loss
 
         ### Compute prediction loss
-        pred_loss = self.loss_fn(pred.type(torch.float32), labels)
+        pred_loss = F.mse_loss(pred.type(torch.float64), labels)
         return CE_loss + KL_loss + pred_loss, CE_loss, KL_loss, pred_loss
