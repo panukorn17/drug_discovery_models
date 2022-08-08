@@ -217,6 +217,7 @@ class Trainer:
             ### Add Property Predictor
             self.MLP_model.train()
             mu_norm = F.normalize(mu_stack)
+            print(mu_norm)
             data_index_lst_final = [item for sublist in data_index_lst for item in sublist]
             #top be deleted
             #return mu_stack, data_index_lst_final
