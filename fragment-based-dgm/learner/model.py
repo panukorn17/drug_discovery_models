@@ -214,5 +214,5 @@ class Loss(nn.Module):
         # return alpha * CE_loss + (1-alpha) * KL_loss
 
         ### Compute prediction loss
-        pred_loss = F.mse_loss(pred, labels)
+        pred_loss = F.mse_loss(pred.float(), labels)
         return CE_loss + KL_loss + pred_loss, CE_loss, KL_loss, pred_loss
