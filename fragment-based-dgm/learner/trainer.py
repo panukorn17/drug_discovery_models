@@ -222,8 +222,8 @@ class Trainer:
             #top be deleted
             #return mu_stack, data_index_lst_final
             #print(data_index_lst_final)
-            labels = dataset.data.iloc[data_index_lst_final].logP
-            labels = torch.tensor(labels.values, requires_grad=True).float()
+            labels = dataset.data.iloc[data_index_lst_final]
+            labels = torch.tensor(labels.logP.values)
             train_losses = []
             print("mu: ", len(mu_stack))
             print("index: ", len(labels))
