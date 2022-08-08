@@ -106,7 +106,7 @@ class Trainer:
         self.model = Frag2Mol(config, vocab)
         self.MLP_model = MLP(config)
         self.optimizer = get_optimizer(config, self.model)
-        self.MLP_optimizer = torch.optim.Adam(self.MLP_model.parameters(), lr=0.01)
+        self.MLP_optimizer = torch.optim.Adam(self.MLP_model.parameters(), lr=0.0001)
         self.scheduler = get_scheduler(config, self.optimizer)
         self.MLP_scheduler = get_scheduler(config, self.MLP_optimizer)
         self.criterion = Loss(config, pad=vocab.PAD)
