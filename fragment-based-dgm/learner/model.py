@@ -69,7 +69,7 @@ class MLP(nn.Module):
         #self.linear3 = nn.Linear(32, 1)
 
         self.layers = nn.Sequential(
-            nn.Linear(latent_size, 64),
+            nn.Linear(self.latent_size, 64),
             nn.ReLU(),
             nn.Linear(64, 32),
             nn.ReLU(),
