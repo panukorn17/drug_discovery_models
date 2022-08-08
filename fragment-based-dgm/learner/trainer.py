@@ -145,8 +145,8 @@ class Trainer:
             loss, CE_loss, KL_loss, pred_loss = self.criterion(output, tgt, mu, sigma, pred, labels, epoch)
             #pred_loss.backward()
             loss.backward()
-            #clip_grad_norm_(self.model.parameters(),
-            #                self.config.get('clip_norm'))
+            clip_grad_norm_(self.model.parameters(),
+                            self.config.get('clip_norm'))
 
             epoch_loss += loss.item()
             #epoch_loss += pred_loss.item()
