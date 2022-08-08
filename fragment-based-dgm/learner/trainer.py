@@ -106,7 +106,7 @@ class Trainer:
         self.model = Frag2Mol(config, vocab)
         self.MLP_model = MLP(config)
         self.optimizer = get_optimizer(config, self.model)
-        self.MLP_optimizer = get_optimizer(config, self.MLP_model)
+        self.MLP_optimizer = torch.optim.Adam(self.MLP_model.parameters(), lr=0.01)
         self.scheduler = get_scheduler(config, self.optimizer)
         self.MLP_scheduler = get_scheduler(config, self.MLP_optimizer)
         self.criterion = Loss(config, pad=vocab.PAD)
@@ -205,6 +205,7 @@ class Trainer:
         logger = TBLogger(self.config)
         dataset = FragmentDataset(self.config)
 
+
         for epoch in range(start_epoch, start_epoch + num_epochs):
             start = time.time()
 
@@ -215,7 +216,7 @@ class Trainer:
             epoch_loss, mu_stack, data_index_lst = self._train_epoch(epoch, loader)
             ### Add Property Predictor
             self.MLP_model.train()
-            #mu_norm = F.normalize(mu_stack)
+            mu_norm = F.normalize(mu_stack)
             data_index_lst_final = [item for sublist in data_index_lst for item in sublist]
             #top be deleted
             #return mu_stack, data_index_lst_final
@@ -225,15 +226,15 @@ class Trainer:
             train_losses = []
             print("mu: ", len(mu_stack))
             print("index: ", len(labels))
-            for i, (mu_norm_input) in enumerate(mu_stack):
+            for i, (mu_norm_input) in enumerate(mu_norm):
                 #if epoch > 0 and self.config.get('use_scheduler'):
                 #    self.MLP_scheduler.step()
-                preds = self.MLP_model(mu_norm_input)
+                preds = self.MLP_model(Variable(mu_norm_input))
                 #print("Prediction: ", preds, ", Label: ", labels[i])
                 if self.config.get('use_gpu'):
-                    loss_pred = self.pred_loss(preds.cuda(), labels[i].cuda())
+                    loss_pred = F.mse_loss(preds.cuda(), labels[i].cuda())
                 else:
-                    loss_pred = self.pred_loss(preds, labels[i])
+                    loss_pred = F.mse_loss(preds, labels[i])
                 self.MLP_optimizer.zero_grad()
                 loss_pred.backward()
                 #clip_grad_norm_(self.MLP_model.parameters(),
