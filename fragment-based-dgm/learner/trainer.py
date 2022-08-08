@@ -122,7 +122,7 @@ class Trainer:
 
     def _train_epoch(self, epoch, loader):
         ###Teddy Code
-        mu_stack = torch.empty((32,100))
+        #mu_stack = torch.empty((32,100))
         #if self.config.get('use_gpu'):
         #    mu_stack = torch.empty((32,100)).cuda()
         data_index_lst = []
@@ -148,7 +148,10 @@ class Trainer:
             ### Insert Label
             #print(data_index)
             #print(pred)
-            mu_stack = torch.cat((mu_stack, mu.cpu()), 0)
+            if idx == 0:
+                mu_stack = mu.cpu()
+            else:
+                mu_stack = torch.cat((mu_stack, mu.cpu()), 0)
             data_index_lst.append(list(data_index))
             ###
             loss = self.criterion(output, tgt, mu, sigma, epoch)
@@ -214,11 +217,13 @@ class Trainer:
             self.MLP_model.train()
             #top be deleted
             #return mu_stack
-            mu_norm = F.normalize(mu_stack[31:])
+            mu_norm = F.normalize(mu_stack)
             data_index_lst_final = [item for sublist in data_index_lst for item in sublist]
             labels = dataset.data.iloc[data_index_lst_final].logP
             labels = torch.tensor(labels.values, requires_grad=True).float()
             train_losses = []
+            print("mu: ", len(mu_norm))
+            print("index: ", len(labels))
             for i, (mu_norm_input) in enumerate(mu_norm):
                 #if epoch > 0 and self.config.get('use_scheduler'):
                 #    self.MLP_scheduler.step()
@@ -230,8 +235,8 @@ class Trainer:
                     loss_pred = self.pred_loss(preds, labels[i])
                 self.MLP_optimizer.zero_grad()
                 loss_pred.backward()
-                clip_grad_norm_(self.MLP_model.parameters(),
-                                self.config.get('clip_norm'))
+                #clip_grad_norm_(self.MLP_model.parameters(),
+                #                self.config.get('clip_norm'))
                 self.MLP_optimizer.step()
                 train_losses.append(loss_pred.item())
                 if i == 0 or i % 1000 == 0:
