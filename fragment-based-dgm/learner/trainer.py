@@ -233,9 +233,9 @@ class Trainer:
                 preds = self.MLP_model(Variable(mu_norm_input))
                 #print("Prediction: ", preds, ", Label: ", labels[i])
                 if self.config.get('use_gpu'):
-                    loss_pred = F.mse_loss(preds.cuda(), labels[i].cuda()).float()
+                    loss_pred = F.mse_loss(preds.cuda(), labels[i].cuda())
                 else:
-                    loss_pred = F.mse_loss(preds, labels[i]).float()
+                    loss_pred = F.mse_loss(preds, labels[i])
                 self.MLP_optimizer.zero_grad()
                 loss_pred.backward()
                 #clip_grad_norm_(self.MLP_model.parameters(),

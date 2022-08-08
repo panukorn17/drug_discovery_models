@@ -69,11 +69,11 @@ class MLP(nn.Module):
         #self.linear3 = nn.Linear(32, 1)
 
         self.layers = nn.Sequential(
-            nn.Linear(self.latent_size, 64),
+            nn.Linear(self.latent_size, 64).float(),
             nn.ReLU(),
-            nn.Linear(64, 32),
+            nn.Linear(64, 32).float(),
             nn.ReLU(),
-            nn.Linear(32, 1)
+            nn.Linear(32, 1).float()
         )
 
     def forward(self, x):
@@ -83,7 +83,7 @@ class MLP(nn.Module):
         #x = self.relu(x)
         #x = self.linear3(x)
         x = self.layers(x)
-        return x.cuda() if self.use_gpu else x
+        return Variable(x.view(-1)).cuda() if self.use_gpu else Variable(x.view(-1))
 
 class Decoder(nn.Module):
     def __init__(self, embed_size, latent_size, hidden_size,
