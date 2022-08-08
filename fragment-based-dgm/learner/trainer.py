@@ -223,6 +223,7 @@ class Trainer:
                 #if epoch > 0 and self.config.get('use_scheduler'):
                 #    self.MLP_scheduler.step()
                 preds = self.MLP_model(mu_norm_input)
+                print("Prediction: ", preds, ", Label: ", labels[i])
                 if self.config.get('use_gpu'):
                     loss_pred = self.pred_loss(preds.cuda(), labels[i].cuda())
                 else:
