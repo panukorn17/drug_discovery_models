@@ -217,14 +217,14 @@ class Trainer:
             self.MLP_model.train()
             #top be deleted
             #return mu_stack
-            mu_norm = F.normalize(mu_stack)
+            #mu_norm = F.normalize(mu_stack)
             data_index_lst_final = [item for sublist in data_index_lst for item in sublist]
             labels = dataset.data.iloc[data_index_lst_final].logP
             labels = torch.tensor(labels.values, requires_grad=True).float()
             train_losses = []
-            print("mu: ", len(mu_norm))
+            print("mu: ", len(mu_stack))
             print("index: ", len(labels))
-            for i, (mu_norm_input) in enumerate(mu_norm):
+            for i, (mu_norm_input) in enumerate(mu_stack):
                 #if epoch > 0 and self.config.get('use_scheduler'):
                 #    self.MLP_scheduler.step()
                 preds = self.MLP_model(mu_norm_input)

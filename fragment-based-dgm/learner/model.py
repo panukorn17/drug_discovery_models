@@ -64,7 +64,7 @@ class MLP(nn.Module):
         self.use_gpu = config.get('use_gpu')
         self.relu = nn.ReLU()
         self.softplus = nn.Softplus()
-        self.linear1 = nn.Linear(self.latent_size, 64)
+        self.linear1 = nn.Linear(self.latent_size, 1)
         self.linear2 = nn.Linear(64, 32)
         self.linear3 = nn.Linear(32, 1)
 
@@ -78,10 +78,10 @@ class MLP(nn.Module):
 
     def forward(self, x):
         x = self.linear1(x)
-        x = self.relu(x)
-        x = self.linear2(x)
-        x = self.relu(x)
-        x = self.linear3(x)
+        #x = self.relu(x)
+        #x = self.linear2(x)
+        #x = self.relu(x)
+        #x = self.linear3(x)
         #x = self.layers(x)
         return Variable(x.view(-1)).cuda() if self.use_gpu else Variable(x.view(-1))
 
