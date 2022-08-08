@@ -214,16 +214,16 @@ class Trainer:
             self.MLP_model.train()
             #top be deleted
             #return mu_stack
-            mu_norm = F.normalize(mu_stack)
+            mu_norm = F.normalize(mu_stack[31:])
             data_index_lst_final = [item for sublist in data_index_lst for item in sublist]
             labels = dataset.data.iloc[data_index_lst_final].logP
             labels = torch.tensor(labels.values, requires_grad=True).float()
             train_losses = []
-            for i, (mu_norm_input) in enumerate(mu_norm[31:]):
+            for i, (mu_norm_input) in enumerate(mu_norm):
                 #if epoch > 0 and self.config.get('use_scheduler'):
                 #    self.MLP_scheduler.step()
                 preds = self.MLP_model(mu_norm_input)
-                print("Prediction: ", preds, ", Label: ", labels[i])
+                #print("Prediction: ", preds, ", Label: ", labels[i])
                 if self.config.get('use_gpu'):
                     loss_pred = self.pred_loss(preds.cuda(), labels[i].cuda())
                 else:
@@ -235,6 +235,7 @@ class Trainer:
                 self.MLP_optimizer.step()
                 train_losses.append(loss_pred.item())
                 if i == 0 or i % 1000 == 0:
+                    print("Prediction: ", preds, ", Label: ", labels[i])
                     print("Batch Predictor loss: ", np.mean(train_losses))
                 ###
             print("Predictor loss", np.mean(train_losses))
