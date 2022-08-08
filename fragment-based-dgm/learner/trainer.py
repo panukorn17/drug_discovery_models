@@ -103,7 +103,7 @@ class Trainer:
         self.vocab = vocab
 
         self.model = Frag2Mol(config, vocab)
-        self.optimizer = get_optimizer(config, self.model)
+        self.optimizer = torch.optim.Adam(self.model.parameters(), lr=0.0001)
         self.scheduler = get_scheduler(config, self.optimizer)
         self.criterion = Loss(config, pad=vocab.PAD)
 

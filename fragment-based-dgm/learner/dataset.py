@@ -71,7 +71,7 @@ class FragmentDataset(Dataset):
                             collate_fn=collator,
                             batch_size=self.config.get('batch_size'),
                             num_workers=24,
-                            shuffle=False)
+                            shuffle=True)
         end = time.time() - start
         elapsed = time.strftime("%H:%M:%S", time.gmtime(end))
         print(f'Data loaded. Size: {self.size}. '
