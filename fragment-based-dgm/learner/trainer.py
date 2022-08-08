@@ -220,7 +220,7 @@ class Trainer:
             data_index_lst_final = [item for sublist in data_index_lst for item in sublist]
             #top be deleted
             #return mu_stack, data_index_lst_final
-            print(data_index_lst_final)
+            #print(data_index_lst_final)
             labels = dataset.data.iloc[data_index_lst_final].logP
             labels = torch.tensor(labels.values, requires_grad=True).float()
             train_losses = []
