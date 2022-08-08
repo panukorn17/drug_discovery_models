@@ -82,7 +82,8 @@ class MLP(nn.Module):
         #x = self.relu(x)
         #x = self.linear3(x)
         x = self.layers(x)
-        return x.view(-1)
+        #return x.view(-1)
+        return x.view(-1).cuda() if self.use_gpu else x.view(-1)
 
 class Decoder(nn.Module):
     def __init__(self, embed_size, latent_size, hidden_size,
