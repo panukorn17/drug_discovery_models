@@ -82,7 +82,7 @@ class MLP(nn.Module):
         #x = self.relu(x)
         #x = self.linear3(x)
         x = self.layers(x)
-        return x
+        return Variable(x.view(-1)).cuda() if self.use_gpu else Variable(x.view(-1))
 
 class Decoder(nn.Module):
     def __init__(self, embed_size, latent_size, hidden_size,
@@ -155,7 +155,7 @@ class Frag2Mol(nn.Module):
         self.mlp = MLP(
             latent_size=self.latent_size,
             use_gpu=self.use_gpu
-        )
+        ).cpu()
 
     def forward(self, inputs, lengths):
         batch_size = inputs.size(0)
