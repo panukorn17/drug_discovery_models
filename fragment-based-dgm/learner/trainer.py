@@ -205,6 +205,7 @@ class Trainer:
         logger = TBLogger(self.config)
         dataset = FragmentDataset(self.config)
 
+        mlp_optimizer = torch.optim.Adam(self.MLP_model.parameters(), lr=0.01)
 
         for epoch in range(start_epoch, start_epoch + num_epochs):
             start = time.time()
@@ -223,29 +224,28 @@ class Trainer:
             #return mu_stack, data_index_lst_final
             #print(data_index_lst_final)
             labels = dataset.data.iloc[data_index_lst_final]
-            labels = torch.tensor(labels.logP.values, requires_grad=True).float()
+            labels = torch.tensor(labels.logP.values)
             train_losses = []
             print("mu: ", len(mu_stack))
             print("index: ", len(labels))
             for i, (mu_norm_input) in enumerate(mu_norm):
                 #if epoch > 0 and self.config.get('use_scheduler'):
                 #    self.MLP_scheduler.step()
-                preds = self.MLP_model(Variable(mu_norm_input))
+                preds = self.MLP_model(Variable(mu_norm_input.cpu()))
                 #print("Prediction: ", preds, ", Label: ", labels[i])
-                if self.config.get('use_gpu'):
-                    loss_pred = F.mse_loss(preds.cuda(), labels[i].cuda())
-                else:
-                    loss_pred = F.mse_loss(preds, labels[i])
-                self.MLP_optimizer.zero_grad()
+                #if self.config.get('use_gpu'):
+                #    loss_pred = F.mse_loss(preds.cuda(), labels[i].cuda())
+                #else:
+                loss_pred = F.mse_loss(preds.type(torch.float64), labels[i])
+                mlp_optimizer.zero_grad()
                 loss_pred.backward()
                 #clip_grad_norm_(self.MLP_model.parameters(),
                 #                self.config.get('clip_norm'))
-                self.MLP_optimizer.step()
+                mlp_optimizer.step()
                 train_losses.append(loss_pred.item())
                 if i == 0 or i % 1000 == 0:
                     print("Prediction: ", preds, ", Label: ", labels[i])
                     print("Batch Predictor loss: ", np.mean(train_losses))
-                ###
             print("Predictor loss", np.mean(train_losses))
             self.losses.append(epoch_loss)
             logger.log('loss', epoch_loss, epoch)
