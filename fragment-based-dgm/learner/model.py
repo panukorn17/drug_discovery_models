@@ -216,4 +216,4 @@ class Loss(nn.Module):
 
         ### Compute prediction loss
         pred_loss = self.loss_fn(pred.type(torch.float32), labels)
-        return CE_loss + KL_loss, CE_loss, KL_loss, pred_loss
+        return CE_loss + KL_loss + pred_loss, CE_loss, KL_loss, pred_loss
