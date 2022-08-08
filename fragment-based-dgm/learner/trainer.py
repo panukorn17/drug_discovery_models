@@ -212,14 +212,14 @@ class Trainer:
             epoch_loss, mu_stack, data_index_lst = self._train_epoch(epoch, loader)
             ### Add Property Predictor
             self.MLP_model.train()
+            #top be deleted
+            #return mu_stack
             mu_norm = F.normalize(mu_stack)
             data_index_lst_final = [item for sublist in data_index_lst for item in sublist]
             labels = dataset.data.iloc[data_index_lst_final].logP
             labels = torch.tensor(labels.values, requires_grad=True).float()
-            print("mu_norm len", len(mu_norm))
-            print("labels len", len(labels))
             train_losses = []
-            for i, (mu_norm_input) in enumerate(mu_norm[:len(labels)]):
+            for i, (mu_norm_input) in enumerate(mu_norm[31:]):
                 #if epoch > 0 and self.config.get('use_scheduler'):
                 #    self.MLP_scheduler.step()
                 preds = self.MLP_model(mu_norm_input)
