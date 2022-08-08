@@ -82,7 +82,7 @@ class MLP(nn.Module):
         #x = self.relu(x)
         #x = self.linear3(x)
         x = self.layers(x)
-        return Variable(x.view(-1)).cuda() if self.use_gpu else Variable(x.view(-1))
+        return x.view(-1)
 
 class Decoder(nn.Module):
     def __init__(self, embed_size, latent_size, hidden_size,
@@ -155,7 +155,7 @@ class Frag2Mol(nn.Module):
         self.mlp = MLP(
             latent_size=self.latent_size,
             use_gpu=self.use_gpu
-        ).cpu()
+        )
 
     def forward(self, inputs, lengths):
         batch_size = inputs.size(0)
@@ -164,7 +164,7 @@ class Frag2Mol(nn.Module):
         z, mu, sigma = self.encoder(inputs, embeddings1, lengths)
         ### Add Property Predictor
         mu_norm = F.normalize(mu)
-        pred = self.mlp(Variable(mu_norm.cpu())).cpu()
+        pred = self.mlp(Variable(mu_norm.cpu()))
         ###
         state = self.latent2rnn(z)
         state = state.view(self.hidden_layers, batch_size, self.hidden_size)
