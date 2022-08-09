@@ -72,7 +72,7 @@ class MLP(nn.Module):
             nn.ReLU(),
             nn.Linear(64, 32),
             nn.ReLU(),
-            nn.Linear(32, 1)
+            nn.Sigmoid(32, 1)
         )
 
     def forward(self, x):
