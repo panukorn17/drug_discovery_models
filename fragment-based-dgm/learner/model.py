@@ -216,5 +216,5 @@ class Loss(nn.Module):
         # return alpha * CE_loss + (1-alpha) * KL_loss
 
         ### Compute prediction loss
-        pred_loss = F.binary_cross_entropy(pred.type(torch.float64), labels.cuda())
+        pred_loss = F.binary_cross_entropy(pred.type(torch.float64), labels.cuda())*10
         return CE_loss + KL_loss + pred_loss, CE_loss, KL_loss, pred_loss
