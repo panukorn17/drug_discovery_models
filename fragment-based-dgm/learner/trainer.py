@@ -142,7 +142,7 @@ class Trainer:
             #print(data_index)
             #print(pred)
             molecules = dataset.data.iloc[list(data_index)]
-            labels = torch.tensor(molecules.logP.values)
+            labels = torch.tensor(molecules.qed.values)
             loss, CE_loss, KL_loss, pred_loss = self.criterion(output, tgt, mu, sigma, pred, labels, epoch)
             #pred_loss.backward()
             loss.backward()
