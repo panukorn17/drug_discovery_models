@@ -164,8 +164,8 @@ class Frag2Mol(nn.Module):
         embeddings1 = F.dropout(embeddings, p=self.dropout, training=self.training)
         z, mu, sigma = self.encoder(inputs, embeddings1, lengths)
         ### Add Property Predictor
-        mu_norm = F.normalize(mu)
-        pred = self.mlp(Variable(mu_norm))
+        z_norm = F.normalize(z)
+        pred = self.mlp(Variable(z_norm))
         ###
         state = self.latent2rnn(z)
         state = state.view(self.hidden_layers, batch_size, self.hidden_size)
