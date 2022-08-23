@@ -44,7 +44,7 @@ class Encoder(nn.Module):
         std = torch.exp(0.5 * logv)
         z = self.sample_normal(dim=batch_size)
         latent_sample = z * std + mean
-        print(latent_sample.shape())
+        print(latent_sample.size())
         return latent_sample, mean, std
 
     def sample_normal(self, dim):
