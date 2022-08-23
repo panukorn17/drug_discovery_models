@@ -216,4 +216,4 @@ class Loss(nn.Module):
 
         ### Compute prediction loss
         pred_loss = F.mse_loss(pred.type(torch.float64), labels.cuda())
-        return CE_loss + KL_loss + 0.5*pred_loss, CE_loss, KL_loss, pred_loss
+        return CE_loss + KL_loss + pred_loss, CE_loss, KL_loss, pred_loss
