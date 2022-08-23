@@ -44,7 +44,6 @@ class Encoder(nn.Module):
         std = torch.exp(0.5 * logv)
         z = self.sample_normal(dim=batch_size)
         latent_sample = z * std + mean
-        print(torch.mean(latent_sample, dim=0).size())
         return latent_sample, mean, std
 
     def sample_normal(self, dim):
@@ -166,7 +165,9 @@ class Frag2Mol(nn.Module):
         z, mu, sigma = self.encoder(inputs, embeddings1, lengths)
         ### Add Property Predictor
         z_norm = F.normalize(z)
-        pred = self.mlp(Variable(z_norm))
+        pred_1 = self.mlp(Variable(z_norm[0, :, :]))
+        pred_2 = self.mlp(Variable(z_norm[1, :, :]))
+        pred = (pred_1 + pred_2)/2
         ###
         state = self.latent2rnn(z)
         state = state.view(self.hidden_layers, batch_size, self.hidden_size)
