@@ -2,6 +2,7 @@ import time
 import numpy as np
 import pandas as pd
 from collections import defaultdict
+from tqdm import tqdm
 
 from gensim.models import Word2Vec
 from sklearn.cluster import KMeans
