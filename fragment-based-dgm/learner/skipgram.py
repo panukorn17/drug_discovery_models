@@ -125,7 +125,9 @@ def train_embeddings(config, data):
     w2w_infreq = None
     c2w_infreq = None
     start_idx = len(TOKENS)
-
+    ###
+    df_fragment_statistics_unique_infreq = pd.read_csv('DATA/CHEMBL/PROCESSED/df_fragment_statistics_unique_infreq.smi')
+    ###
     if use_mask:
         sentences = [s.split(" ") for s in data.fragments]
         # first word embedding
@@ -148,9 +150,11 @@ def train_embeddings(config, data):
         
         infreq = [w2i[w] for (w, freq) in w2f.items() if freq <= mask_freq]            
         i2w_infreq = {}
-        for inf in infreq:
+        for inf in tqdm(infreq):
             word = i2w[inf]
-            i2w_infreq[inf] = f"cluster{w2f[word]}_{word.count('*')}"
+            #i2w_infreq[inf] = f"cluster{w2f[word]}_{word.count('*')}"
+            i2w_infreq[inf] = df_fragment_statistics_unique_infreq.loc[
+                df_fragment_statistics_unique_infreq['Fragment'] == word, 'cluster'].values[0]
 
         w2w_infreq = {i2w[k]: v for (k, v) in i2w_infreq.items()}
         c2w_infreq = defaultdict(list)
