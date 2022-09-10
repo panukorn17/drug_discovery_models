@@ -116,7 +116,7 @@ class Trainer:
         self.scores = []
         self.best_score = - np.float('inf')
 
-    def _train_epoch(self, epoch, loader):
+    def _train_epoch(self, epoch, loader, frament_count_df):
         ###Teddy Code
         dataset = FragmentDataset(self.config)
         ###
@@ -125,7 +125,6 @@ class Trainer:
 
         if epoch > 0 and self.config.get('use_scheduler'):
             self.scheduler.step()
-
         #for idx, (src, tgt, lengths) in enumerate(loader):
         ### Teddy Code
         for idx, (src, tgt, lengths, data_index) in enumerate(loader):
@@ -143,7 +142,7 @@ class Trainer:
             #print(pred)
             molecules = dataset.data.iloc[list(data_index)]
             labels = torch.tensor(molecules.logP.values)
-            loss, CE_loss, KL_loss, pred_loss = self.criterion(output, tgt, mu, sigma, pred, labels, epoch)
+            loss, CE_loss, KL_loss, pred_loss = self.criterion(output, tgt, mu, sigma, pred, labels, epoch, frament_count_df)
             #pred_loss.backward()
             loss.backward()
             clip_grad_norm_(self.model.parameters(),
@@ -194,6 +193,14 @@ class Trainer:
 
         logger = TBLogger(self.config)
 
+        ### Get counts of each fragments
+        fragment_list = []
+        for frag in tqdm(dataset.data.fragments):
+            fragment_list.extend(frag.split())
+        fragment_counts = pd.Series(fragment_list).value_counts()
+        frament_count_df = pd.DataFrame(fragment_counts, columns=['count']).reset_index().rename(
+            columns={"index": "fragment"})
+        ###
         for epoch in range(start_epoch, start_epoch + num_epochs):
             start = time.time()
 
@@ -201,7 +208,7 @@ class Trainer:
             #mu_stack = self._train_epoch(epoch, loader)
             #return mu_stack
             ###
-            epoch_loss = self._train_epoch(epoch, loader)
+            epoch_loss = self._train_epoch(epoch, loader, frament_count_df)
             self.losses.append(epoch_loss)
             logger.log('loss', epoch_loss, epoch)
             save_ckpt(self, epoch, filename="last.pt")

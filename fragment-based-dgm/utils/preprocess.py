@@ -107,7 +107,7 @@ def read_and_clean_dataset(info):
     return dataset
 
 
-def add_fragments(dataset, info, n_jobs):
+def add_fragments(dataset, n_jobs):
     smiles = dataset.smiles.tolist()
     mols = mols_from_smiles(smiles)
     pjob = Parallel(n_jobs=n_jobs, verbose=1)
