@@ -161,7 +161,7 @@ class Frag2Mol(nn.Module):
     def forward(self, inputs, lengths):
         batch_size = inputs.size(0)
         embeddings = self.embedder(inputs)
-        print(inputs)
+        #print(embeddings)
         embeddings1 = F.dropout(embeddings, p=self.dropout, training=self.training)
         z, mu, sigma = self.encoder(inputs, embeddings1, lengths)
         ### Add Property Predictor
@@ -174,6 +174,7 @@ class Frag2Mol(nn.Module):
         state = state.view(self.hidden_layers, batch_size, self.hidden_size)
         embeddings2 = F.dropout(embeddings, p=self.dropout, training=self.training)
         output, state = self.decoder(embeddings2, state, lengths)
+        print(state)
         #return output, mu, sigma
         ### Teddy Code
         return output, mu, sigma, z, pred
