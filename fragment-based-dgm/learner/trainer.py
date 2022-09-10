@@ -194,6 +194,7 @@ class Trainer:
         logger = TBLogger(self.config)
 
         ### Get counts of each fragments
+        dataset = FragmentDataset(self.config)
         fragment_list = []
         for frag in tqdm(dataset.data.fragments):
             fragment_list.extend(frag.split())
