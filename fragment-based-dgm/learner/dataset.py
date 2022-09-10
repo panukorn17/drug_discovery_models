@@ -51,6 +51,7 @@ class FragmentDataset(Dataset):
     def __getitem__(self, index):
         """Returns one data pair (source and target)."""
         seq = self.data.fragments[index].split(" ")
+        print(seq)
         ### Teddy code
         #print(self.data.fragments[index])
         ###
