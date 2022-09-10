@@ -174,7 +174,7 @@ class Frag2Mol(nn.Module):
         state = state.view(self.hidden_layers, batch_size, self.hidden_size)
         embeddings2 = F.dropout(embeddings, p=self.dropout, training=self.training)
         output, state = self.decoder(embeddings2, state, lengths)
-        print(state)
+        print(vocab.translate(output))
         #return output, mu, sigma
         ### Teddy Code
         return output, mu, sigma, z, pred
