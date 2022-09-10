@@ -7,7 +7,7 @@ from torch.autograd import Variable
 from torch.nn.utils import clip_grad_norm_
 from torch.optim import Adam
 from torch.optim.lr_scheduler import StepLR
-
+from tqdm import tqdm
 from tensorboardX import SummaryWriter
 
 
