@@ -19,7 +19,7 @@ class DataCollator:
         for i, seq in enumerate(sequences):
             end = lengths[i]
             padded_seqs[i, :end] = seq[:end]
-        print(padded_seqs)
+        #print(padded_seqs)
         return torch.LongTensor(padded_seqs), lengths
 
     def __call__(self, data):
@@ -57,8 +57,11 @@ class FragmentDataset(Dataset):
         #print(self.data.fragments[index])
         ###
         seq = self.vocab.append_delimiters(seq)
+        print(seq)
         src = self.vocab.translate(seq[:-1])
+        print(src)
         tgt = self.vocab.translate(seq[1:])
+        print(tgt)
         #return src, tgt
         ### Teddy code
         return src, tgt, index
