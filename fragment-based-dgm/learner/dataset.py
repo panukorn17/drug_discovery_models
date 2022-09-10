@@ -59,9 +59,9 @@ class FragmentDataset(Dataset):
         seq = self.vocab.append_delimiters(seq)
         print(seq)
         src = self.vocab.translate(seq[:-1])
-        print(src)
+        #print(src)
         tgt = self.vocab.translate(seq[1:])
-        print(tgt)
+        #print(tgt)
         #return src, tgt
         ### Teddy code
         return src, tgt, index
