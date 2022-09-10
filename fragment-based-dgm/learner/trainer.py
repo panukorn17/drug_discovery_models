@@ -137,7 +137,7 @@ class Trainer:
                 tgt = tgt.cuda()
 
             output, mu, sigma, z, pred = self.model(src, lengths)
-            print(self.vocab.translate(src))
+            print(src)
             ### Insert Label
             #print(data_index)
             #print(pred)
