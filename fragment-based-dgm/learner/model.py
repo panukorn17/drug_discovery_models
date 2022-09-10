@@ -161,6 +161,7 @@ class Frag2Mol(nn.Module):
     def forward(self, inputs, lengths):
         batch_size = inputs.size(0)
         embeddings = self.embedder(inputs)
+        print(inputs)
         embeddings1 = F.dropout(embeddings, p=self.dropout, training=self.training)
         z, mu, sigma = self.encoder(inputs, embeddings1, lengths)
         ### Add Property Predictor
@@ -194,11 +195,11 @@ class Loss(nn.Module):
 
     def forward(self, output, target, mu, sigma, pred, labels, epoch, frament_count_df):
         output = F.log_softmax(output, dim=1)
-        print(output)
+        print(output.size())
         # flatten all predictions and targets
         target = target.view(-1)
         output = output.view(-1, output.size(2))
-        print(output)
+        #print(output)
 
         # create a mask filtering out all tokens that ARE NOT the padding token
         mask = (target > self.pad).float()
@@ -208,7 +209,7 @@ class Loss(nn.Module):
 
         # pick the values for the label and zero out the rest with the mask
         output = output[range(output.size(0)), target] * mask
-        print(output)
+        #print(output)
 
         # compute cross entropy loss which ignores all <PAD> tokens
         CE_loss = -torch.sum(output) / nb_tokens
