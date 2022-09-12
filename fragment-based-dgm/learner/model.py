@@ -199,10 +199,10 @@ class Loss(nn.Module):
         #print("Original Output Size:", output.size())
         #print("Original Output Sample:", output)
         # flatten all predictions and targets
-        #print("Original translated Target Size:", target.size())
-        #print("Original translated Target Sample:", target)
+        print("Original translated Target Size:", target.size())
+        print("Original translated Target Sample:", target)
         #print("Original Target Sample:", tgt_str_lst)
-        print("target: ", self.vocab.translate(target))
+        #print("target: ", self.vocab.translate(target))
         target = target.view(-1)
         #print("Flattened translated Target Size:", target.size())
         output = output.view(-1, output.size(2))
