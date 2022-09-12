@@ -196,6 +196,7 @@ class Loss(nn.Module):
 
     def forward(self, output, target, mu, sigma, pred, labels, epoch, tgt_str_lst, penalty_weights):
         output = F.log_softmax(output, dim=1)
+        print("molecules logP", labels)
         #print("Original Output Size:", output.size())
         #print("Original Output Sample:", output)
         # flatten all predictions and targets
