@@ -197,6 +197,7 @@ class Loss(nn.Module):
         output = F.log_softmax(output, dim=1)
         print(output.size())
         # flatten all predictions and targets
+        target.size()
         target = target.view(-1)
         print(target.size())
         output = output.view(-1, output.size(2))

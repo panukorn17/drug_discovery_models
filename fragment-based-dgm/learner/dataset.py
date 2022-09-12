@@ -66,7 +66,7 @@ class FragmentDataset(Dataset):
         #print(tgt)
         #return src, tgt
         ### Teddy code
-        return src, tgt, index, seq[1:]
+        return src, tgt, index, seq[1:-1]
 
     def __len__(self):
         return self.size
