@@ -153,7 +153,7 @@ class Trainer:
             ### Insert Label
             #print(data_index)
             molecules = dataset.data.iloc[list(data_index)]
-            print("molecules: ", molecules[molecules['smiles'] == target_str_ls_2])
+            print("molecules: ", molecules[molecules['smiles'].isin(target_str_ls_2)])
             print("target string list", tgt_str_lst)
             labels = torch.tensor(molecules.logP.values)
             loss, CE_loss, KL_loss, pred_loss = self.criterion(output, tgt, mu, sigma, pred, labels, epoch, tgt_str_lst, penalty_weights)
