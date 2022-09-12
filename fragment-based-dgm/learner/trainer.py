@@ -131,24 +131,25 @@ class Trainer:
         for idx, (src, tgt, lengths, data_index, tgt_str) in enumerate(loader):
             ###
             self.optimizer.zero_grad()
-            tgt_str_lst = list(tgt_str)
+            #tgt_str_lst = list(tgt_str)
             #print(tgt_str_lst)
             #print([[penalty_weights[tgt_str_lst_i].values] for tgt_str_lst_i in tgt_str_lst])
             #print(penalty_weights[tgt_str])
-            target_str_ls_2 = [" ".join(self.vocab.translate(target_i))for target_i in tgt.cpu().detach().numpy()]
+            tgt_str_lst = [self.vocab.translate(target_i) for target_i in tgt.cpu().detach().numpy()]
+            target_str_ls_2 = [" ".join(self.vocab.translate(target_i)) for target_i in tgt.cpu().detach().numpy()]
             src_str_ls_2 = [self.vocab.translate(target_i) for target_i in src.cpu().detach().numpy()]
+            #print("target string list src", tgt_str_lst)
             print("target string list tgt", target_str_ls_2)
-            print("target string list src", src_str_ls_2)
-            print("lengths:", lengths)
-            print("index:", data_index)
+            #print("lengths:", lengths)
+            #print("index:", data_index)
             src, tgt = Variable(src), Variable(tgt)
             if self.config.get('use_gpu'):
                 src = src.cuda()
                 tgt = tgt.cuda()
 
             output, mu, sigma, z, pred = self.model(src, lengths)
-            print("mu:", mu)
-            print("mu size:", mu.size())
+            #print("mu:", mu)
+            #print("mu size:", mu.size())
             #print(output.size())
             ### Insert Label
             #print(data_index)
@@ -156,9 +157,10 @@ class Trainer:
             data_index_correct = [molecules[molecules['fragments'] == target_str_ls_2_i].index.values[0] for target_str_ls_2_i in target_str_ls_2]
             molecules_correct = dataset.data.iloc[data_index_correct]
             print("molecules: ", molecules_correct)
-            print("index correct: ", data_index_correct)
-            print("target string list", tgt_str_lst)
-            labels = torch.tensor(molecules.logP.values)
+            #print("index correct: ", data_index_correct)
+            #rint("target string list", tgt_str_lst)
+            labels = torch.tensor(molecules_correct.logP.values)
+            print("labels: ", labels)
             loss, CE_loss, KL_loss, pred_loss = self.criterion(output, tgt, mu, sigma, pred, labels, epoch, tgt_str_lst, penalty_weights)
             #pred_loss.backward()
             loss.backward()
