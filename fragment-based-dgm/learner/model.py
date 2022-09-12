@@ -216,7 +216,7 @@ class Loss(nn.Module):
             else:
                 target_pen_weight_lst.append(target_pen_weight_i)
         #target_pen_weight_lst = [penalty_weights[self.vocab.translate(target_i)].values for target_i in target.cpu().detach().numpy()]
-        print("penalty: ", torch.Tensor(target_pen_weight_lst))
+        print("penalty: ", torch.Tensor(target_pen_weight_lst).view(-1))
         #print("target 2: ", [tgt_str_lst[i] for i in range(len(tgt_str_lst))])
         target = target.view(-1)
         #target_str_lst = [self.vocab.translate(target.cpu().detach().numpy())]
@@ -236,7 +236,7 @@ class Loss(nn.Module):
 
         # pick the values for the label and zero out the rest with the mask
         output = output[range(output.size(0)), target] * mask
-        #print(output)
+        print(output)
 
         # compute cross entropy loss which ignores all <PAD> tokens
         CE_loss = -torch.sum(output) / nb_tokens
