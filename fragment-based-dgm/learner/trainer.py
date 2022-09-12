@@ -140,6 +140,8 @@ class Trainer:
                 tgt = tgt.cuda()
 
             output, mu, sigma, z, pred = self.model(src, lengths)
+            print("mu:", mu)
+            print("mu size:", mu.size())
             #print(output.size())
             ### Insert Label
             #print(data_index)
