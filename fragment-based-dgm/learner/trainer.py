@@ -131,8 +131,8 @@ class Trainer:
             ###
             self.optimizer.zero_grad()
 
-            tgt_str = [tgt_str_list for tgt_str_list in tgt_str]
-            print(penalty_weights[tgt_str])
+            list(tgt_str)
+            #print(penalty_weights[tgt_str])
             src, tgt = Variable(src), Variable(tgt)
             if self.config.get('use_gpu'):
                 src = src.cuda()
