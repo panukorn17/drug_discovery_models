@@ -198,6 +198,7 @@ class Loss(nn.Module):
         print(output.size())
         # flatten all predictions and targets
         target = target.view(-1)
+        print(target)
         output = output.view(-1, output.size(2))
         #print(output)
 
