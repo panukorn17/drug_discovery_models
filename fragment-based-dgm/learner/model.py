@@ -193,11 +193,14 @@ class Loss(nn.Module):
         ## Insert loss function
         self.loss_fn = nn.MSELoss()
 
-    def forward(self, output, target, mu, sigma, pred, labels, epoch, penalty_weights):
+    def forward(self, output, target, mu, sigma, pred, labels, epoch, tgt_str_lst, penalty_weights):
         output = F.log_softmax(output, dim=1)
         print(output.size())
+        print(output)
         # flatten all predictions and targets
-        target.size()
+        print(target.size())
+        print(target)
+        print(tgt_str_lst)
         target = target.view(-1)
         print(target.size())
         output = output.view(-1, output.size(2))

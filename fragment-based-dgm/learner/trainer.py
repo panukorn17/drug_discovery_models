@@ -131,8 +131,8 @@ class Trainer:
             ###
             self.optimizer.zero_grad()
             tgt_str_lst = list(tgt_str)
-            print(tgt_str_lst)
-            print([[penalty_weights[tgt_str_lst_i].values] for tgt_str_lst_i in tgt_str_lst])
+            #print(tgt_str_lst)
+            #print([[penalty_weights[tgt_str_lst_i].values] for tgt_str_lst_i in tgt_str_lst])
             #print(penalty_weights[tgt_str])
             src, tgt = Variable(src), Variable(tgt)
             if self.config.get('use_gpu'):
@@ -146,7 +146,7 @@ class Trainer:
             #print(pred)
             molecules = dataset.data.iloc[list(data_index)]
             labels = torch.tensor(molecules.logP.values)
-            loss, CE_loss, KL_loss, pred_loss = self.criterion(output, tgt, mu, sigma, pred, labels, epoch, penalty_weights)
+            loss, CE_loss, KL_loss, pred_loss = self.criterion(output, tgt, mu, sigma, pred, labels, epoch, tgt_str_lst, penalty_weights)
             #pred_loss.backward()
             loss.backward()
             clip_grad_norm_(self.model.parameters(),
