@@ -127,10 +127,11 @@ class Trainer:
             self.scheduler.step()
         #for idx, (src, tgt, lengths) in enumerate(loader):
         ### Teddy Code
-        for idx, (src, tgt, lengths, data_index) in enumerate(loader):
+        for idx, (src, tgt, lengths, data_index, seq) in enumerate(loader):
             ###
             self.optimizer.zero_grad()
 
+            print(seq)
             src, tgt = Variable(src), Variable(tgt)
             if self.config.get('use_gpu'):
                 src = src.cuda()

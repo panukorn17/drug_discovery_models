@@ -24,14 +24,14 @@ class DataCollator:
 
     def __call__(self, data):
         # seperate source and target sequences
-        src_seqs, tgt_seqs, data_sample = zip(*data)
+        src_seqs, tgt_seqs, data_sample, seq = zip(*data)
 
         # merge sequences (from tuple of 1D tensor to 2D tensor)
         src_seqs, src_lengths = self.merge(src_seqs)
         tgt_seqs, tgt_lengths = self.merge(tgt_seqs)
         #return src_seqs, tgt_seqs, src_lengths
         ### Teddy Code
-        return src_seqs, tgt_seqs, src_lengths, data_sample
+        return src_seqs, tgt_seqs, src_lengths, data_sample, seq
         ###
 
 
@@ -57,7 +57,7 @@ class FragmentDataset(Dataset):
         #print(self.data.fragments[index])
         ###
         seq = self.vocab.append_delimiters(seq)
-        print(seq)
+        #print(seq)
         #print(seq[:-1])
         #print(seq[1:])
         src = self.vocab.translate(seq[:-1])
@@ -66,7 +66,7 @@ class FragmentDataset(Dataset):
         #print(tgt)
         #return src, tgt
         ### Teddy code
-        return src, tgt, index
+        return src, tgt, index, seq
 
     def __len__(self):
         return self.size
