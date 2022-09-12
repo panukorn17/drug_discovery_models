@@ -199,11 +199,11 @@ class Loss(nn.Module):
         #print("Original Output Size:", output.size())
         #print("Original Output Sample:", output)
         # flatten all predictions and targets
-        print("Original translated Target Size:", target.size())
-        print("Original translated Target Sample:", target)
+        #print("Original translated Target Size:", target.size())
+        #print("Original translated Target Sample:", target)
         #print("Original Target Sample:", tgt_str_lst)
         target_str_lst = [self.vocab.translate(target_i) for target_i in target.cpu().detach().numpy()]
-        print("target: ", target_str_lst)
+        #print("target: ", target_str_lst)
         #print([[penalty_weights[tgt_str_lst_i].values] for tgt_str_lst_i in tgt_str_lst])
         target_pen_weight_lst = []
         for target_i in target.cpu().detach().numpy():
@@ -216,7 +216,8 @@ class Loss(nn.Module):
             else:
                 target_pen_weight_lst.append(target_pen_weight_i)
         #target_pen_weight_lst = [penalty_weights[self.vocab.translate(target_i)].values for target_i in target.cpu().detach().numpy()]
-        print("penalty: ", torch.Tensor(target_pen_weight_lst).view(-1))
+        #print("penalty: ", torch.Tensor(target_pen_weight_lst).view(-1))
+        target_pen_weight = torch.Tensor(target_pen_weight_lst).view(-1)
         #print("target 2: ", [tgt_str_lst[i] for i in range(len(tgt_str_lst))])
         target = target.view(-1)
         #target_str_lst = [self.vocab.translate(target.cpu().detach().numpy())]
@@ -235,8 +236,8 @@ class Loss(nn.Module):
         nb_tokens = int(torch.sum(mask).item())
 
         # pick the values for the label and zero out the rest with the mask
-        output = output[range(output.size(0)), target] * mask
-        print(output)
+        output = output[range(output.size(0)), target] * target_pen_weight_lst * mask
+        #print(output)
 
         # compute cross entropy loss which ignores all <PAD> tokens
         CE_loss = -torch.sum(output) / nb_tokens
