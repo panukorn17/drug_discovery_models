@@ -211,7 +211,7 @@ class Loss(nn.Module):
 
         # pick the values for the label and zero out the rest with the mask
         output = output[range(output.size(0)), target] * mask
-        print(output.size())
+        print(output)
 
         # compute cross entropy loss which ignores all <PAD> tokens
         CE_loss = -torch.sum(output) / nb_tokens
