@@ -58,6 +58,8 @@ class FragmentDataset(Dataset):
         ###
         seq = self.vocab.append_delimiters(seq)
         print(seq)
+        print(seq[:-1])
+        print(seq[1:])
         src = self.vocab.translate(seq[:-1])
         #print(src)
         tgt = self.vocab.translate(seq[1:])
