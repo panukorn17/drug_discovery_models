@@ -195,21 +195,21 @@ class Loss(nn.Module):
 
     def forward(self, output, target, mu, sigma, pred, labels, epoch, tgt_str_lst, penalty_weights):
         output = F.log_softmax(output, dim=1)
-        print("Original Output Size:", output.size())
-        print("Original Output Sample:", output)
+        #print("Original Output Size:", output.size())
+        #print("Original Output Sample:", output)
         # flatten all predictions and targets
-        print("Original translated Target Size:", target.size())
-        print("Original translated Target Sample:", target)
-        print("Original Target Sample:", tgt_str_lst)
+        #print("Original translated Target Size:", target.size())
+        #print("Original translated Target Sample:", target)
+        #print("Original Target Sample:", tgt_str_lst)
         target = target.view(-1)
-        print("Flattened translated Target Size:", target.size())
+        #print("Flattened translated Target Size:", target.size())
         output = output.view(-1, output.size(2))
-        print("Flattened Output Size:", output.size())
-        print("Flattened Output sample:", output)
+        #print("Flattened Output Size:", output.size())
+        #print("Flattened Output sample:", output)
 
         # create a mask filtering out all tokens that ARE NOT the padding token
         mask = (target > self.pad).float()
-        print("Padding Mask:", mask)
+        #print("Padding Mask:", mask)
 
         # count how many tokens we have
         nb_tokens = int(torch.sum(mask).item())
