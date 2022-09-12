@@ -202,7 +202,7 @@ class Loss(nn.Module):
         print("Original translated Target Size:", target.size())
         print("Original translated Target Sample:", target)
         #print("Original Target Sample:", tgt_str_lst)
-        #print("target: ", self.vocab.translate(target))
+        print("target: ", [self.vocab.translate(target_i) for target_i in target])
         target = target.view(-1)
         #print("Flattened translated Target Size:", target.size())
         output = output.view(-1, output.size(2))
@@ -218,7 +218,7 @@ class Loss(nn.Module):
 
         # pick the values for the label and zero out the rest with the mask
         output = output[range(output.size(0)), target] * mask
-        print(output)
+        #print(output)
 
         # compute cross entropy loss which ignores all <PAD> tokens
         CE_loss = -torch.sum(output) / nb_tokens
