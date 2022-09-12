@@ -139,6 +139,7 @@ class Trainer:
             print("target string list tgt", target_str_ls_2)
             print("target string list src", src_str_ls_2)
             print("lengths:", lengths)
+            print("index:", data_index)
             src, tgt = Variable(src), Variable(tgt)
             if self.config.get('use_gpu'):
                 src = src.cuda()
