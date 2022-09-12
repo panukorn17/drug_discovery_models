@@ -205,7 +205,17 @@ class Loss(nn.Module):
         target_str_lst = [self.vocab.translate(target_i) for target_i in target.cpu().detach().numpy()]
         print("target: ", target_str_lst)
         #print([[penalty_weights[tgt_str_lst_i].values] for tgt_str_lst_i in tgt_str_lst])
-        target_pen_weight_lst = [penalty_weights[self.vocab.translate(target_i)].values for target_i in target.cpu().detach().numpy()]
+        target_pen_weight = torch.zeros(output.size(0), output.size(1))
+        target_pen_weight_lst = []
+        for target_i in target.cpu().detach().numpy():
+            target_pen_weight_i = penalty_weights[self.vocab.translate(target_i)].values
+            if len(target_pen_weight_i) < target.size(1):
+                pad_len = target.size(1) - len(target_pen_weight_i)
+                target_pen_weight_i = np.pad(target_pen_weight_i, (0, pad_len), 'constant')
+                target_pen_weight_lst.append(target_pen_weight_i)
+            else:
+                target_pen_weight_lst.append(target_pen_weight_i)
+        #target_pen_weight_lst = [penalty_weights[self.vocab.translate(target_i)].values for target_i in target.cpu().detach().numpy()]
         print("penalty: ", target_pen_weight_lst)
         #print("target 2: ", [tgt_str_lst[i] for i in range(len(tgt_str_lst))])
         target = target.view(-1)
