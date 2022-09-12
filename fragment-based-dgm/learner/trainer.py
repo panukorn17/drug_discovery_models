@@ -153,7 +153,7 @@ class Trainer:
             ### Insert Label
             #print(data_index)
             molecules = dataset.data.iloc[list(data_index)]
-            data_index_correct = [molecules[molecules['fragments'] == target_str_ls_2_i].index.values for target_str_ls_2_i in target_str_ls_2]
+            data_index_correct = [molecules[molecules['fragments'] == target_str_ls_2_i].index.values[0] for target_str_ls_2_i in target_str_ls_2]
             #molecules_correct = dataset.data.iloc[data_index_correct]
             print("molecules: ", molecules)
             print("index correct: ", data_index_correct)
