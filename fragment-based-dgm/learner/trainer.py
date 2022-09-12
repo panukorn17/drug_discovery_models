@@ -153,7 +153,7 @@ class Trainer:
             ### Insert Label
             #print(data_index)
             molecules = dataset.data.iloc[list(data_index)]
-            data_index_correct = [molecules[molecules['fragments'] == target_str_ls_2_i].index for target_str_ls_2_i in target_str_ls_2_i]
+            data_index_correct = [molecules[molecules['fragments'] == target_str_ls_2_i].index for target_str_ls_2_i in target_str_ls_2]
             print("molecules: ", molecules.iloc[data_index_correct])
             print("target string list", tgt_str_lst)
             labels = torch.tensor(molecules.logP.values)
