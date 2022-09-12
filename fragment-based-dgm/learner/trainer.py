@@ -203,6 +203,7 @@ class Trainer:
         for frag in tqdm(dataset.data.fragments):
             fragment_list.extend(frag.split())
         fragment_counts = pd.Series(fragment_list).value_counts()
+        fragment_counts = fragment_counts.append(pd.Series(len(dataset.data)))
         penalty = np.sum(np.log(fragment_counts + 1)) / np.log(fragment_counts + 1)
         penalty_weights = penalty / np.linalg.norm(penalty)
         ###
