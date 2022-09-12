@@ -208,6 +208,7 @@ class Loss(nn.Module):
 
         # create a mask filtering out all tokens that ARE NOT the padding token
         mask = (target > self.pad).float()
+        print(mask)
 
         # count how many tokens we have
         nb_tokens = int(torch.sum(mask).item())
