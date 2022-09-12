@@ -130,8 +130,9 @@ class Trainer:
         for idx, (src, tgt, lengths, data_index, tgt_str) in enumerate(loader):
             ###
             self.optimizer.zero_grad()
-
-            print(list(tgt_str))
+            tgt_str_lst = list(tgt_str)
+            print(tgt_str_lst)
+            print(penalty_weights[tgt_str_lst])
             #print(penalty_weights[tgt_str])
             src, tgt = Variable(src), Variable(tgt)
             if self.config.get('use_gpu'):
