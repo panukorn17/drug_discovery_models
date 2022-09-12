@@ -202,7 +202,7 @@ class Loss(nn.Module):
         print("Original translated Target Size:", target.size())
         print("Original translated Target Sample:", target)
         #print("Original Target Sample:", tgt_str_lst)
-        print("target: ", [self.vocab.translate(target_i) for target_i in target])
+        print("target: ", [self.vocab.translate(target_i.detach().numpy()) for target_i in target])
         target = target.view(-1)
         #print("Flattened translated Target Size:", target.size())
         output = output.view(-1, output.size(2))
