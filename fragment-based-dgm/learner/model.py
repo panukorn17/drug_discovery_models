@@ -212,7 +212,7 @@ class Loss(nn.Module):
             if len(target_pen_weight_i) < target.size(1):
                 pad_len = target.size(1) - len(target_pen_weight_i)
                 target_pen_weight_i = np.pad(target_pen_weight_i, (0, pad_len), 'constant')
-                target_pen_weight_i[len(target_pen_weight_i)] = penalty_weights['0']
+                target_pen_weight_i[len(target_pen_weight_i)] = penalty_weights[-1].values
                 target_pen_weight_lst.append(target_pen_weight_i)
             else:
                 target_pen_weight_lst.append(target_pen_weight_i)
