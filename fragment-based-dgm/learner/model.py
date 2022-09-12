@@ -186,12 +186,13 @@ class Frag2Mol(nn.Module):
 
 
 class Loss(nn.Module):
-    def __init__(self, config, pad):
+    def __init__(self, config, vocab, pad):
         super().__init__()
         self.config = config
         self.pad = pad
         ## Insert loss function
         self.loss_fn = nn.MSELoss()
+        self.vocab = vocab
 
     def forward(self, output, target, mu, sigma, pred, labels, epoch, tgt_str_lst, penalty_weights):
         output = F.log_softmax(output, dim=1)
@@ -201,6 +202,7 @@ class Loss(nn.Module):
         #print("Original translated Target Size:", target.size())
         #print("Original translated Target Sample:", target)
         #print("Original Target Sample:", tgt_str_lst)
+        print("target: ", self.vocab.translate(tgt))
         target = target.view(-1)
         #print("Flattened translated Target Size:", target.size())
         output = output.view(-1, output.size(2))

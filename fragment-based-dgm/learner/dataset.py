@@ -61,10 +61,10 @@ class FragmentDataset(Dataset):
         #print(seq[:-1])
         #print(seq[1:])
         src = self.vocab.translate(seq[:-1])
-        print("source: ", self.vocab.translate(src))
+        #print("source: ", self.vocab.translate(src))
         #print(src)
         tgt = self.vocab.translate(seq[1:])
-        print("target: ", self.vocab.translate(tgt))
+        #print("target: ", self.vocab.translate(tgt))
         #print(tgt)
         #return src, tgt
         ### Teddy code

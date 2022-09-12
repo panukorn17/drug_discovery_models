@@ -106,7 +106,7 @@ class Trainer:
         self.optimizer = get_optimizer(config, self.model)
         #torch.optim.Adam(self.model.parameters(), lr=0.0001)
         self.scheduler = get_scheduler(config, self.optimizer)
-        self.criterion = Loss(config, pad=vocab.PAD)
+        self.criterion = Loss(config, vocab, pad=vocab.PAD)
 
         if self.config.get('use_gpu'):
             self.model = self.model.cuda()
