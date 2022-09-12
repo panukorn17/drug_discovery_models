@@ -205,7 +205,8 @@ class Loss(nn.Module):
         target_str_lst = [self.vocab.translate(target_i) for target_i in target.cpu().detach().numpy()]
         print("target: ", target_str_lst)
         #print([[penalty_weights[tgt_str_lst_i].values] for tgt_str_lst_i in tgt_str_lst])
-        print("target 2: ", [tgt_str_lst[i] for i in range(len(tgt_str_lst))])
+        print("penalty: ", [[penalty_weights[self.vocab.translate(target_i)].values] for target_i in target.cpu().detach().numpy()])
+        #print("target 2: ", [tgt_str_lst[i] for i in range(len(tgt_str_lst))])
         target = target.view(-1)
         #target_str_lst = [self.vocab.translate(target.cpu().detach().numpy())]
         #print("target: ", target_str_lst)
