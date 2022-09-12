@@ -193,7 +193,7 @@ class Loss(nn.Module):
         ## Insert loss function
         self.loss_fn = nn.MSELoss()
 
-    def forward(self, output, target, mu, sigma, pred, labels, epoch, frament_count_df):
+    def forward(self, output, target, mu, sigma, pred, labels, epoch, penalty_weights):
         output = F.log_softmax(output, dim=1)
         print(output.size())
         # flatten all predictions and targets
@@ -209,7 +209,7 @@ class Loss(nn.Module):
 
         # pick the values for the label and zero out the rest with the mask
         output = output[range(output.size(0)), target] * mask
-        #print(output)
+        print(output)
 
         # compute cross entropy loss which ignores all <PAD> tokens
         CE_loss = -torch.sum(output) / nb_tokens

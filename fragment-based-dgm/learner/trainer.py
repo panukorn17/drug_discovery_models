@@ -116,7 +116,7 @@ class Trainer:
         self.scores = []
         self.best_score = - np.float('inf')
 
-    def _train_epoch(self, epoch, loader, frament_count_df):
+    def _train_epoch(self, epoch, loader, penalty_weights):
         ###Teddy Code
         dataset = FragmentDataset(self.config)
         ###
@@ -127,24 +127,24 @@ class Trainer:
             self.scheduler.step()
         #for idx, (src, tgt, lengths) in enumerate(loader):
         ### Teddy Code
-        for idx, (src, tgt, lengths, data_index, seq) in enumerate(loader):
+        for idx, (src, tgt, lengths, data_index, tgt_str) in enumerate(loader):
             ###
             self.optimizer.zero_grad()
 
-            print(seq)
+            print(tgt_str)
             src, tgt = Variable(src), Variable(tgt)
             if self.config.get('use_gpu'):
                 src = src.cuda()
                 tgt = tgt.cuda()
 
             output, mu, sigma, z, pred = self.model(src, lengths)
-            print(output.size())
+            #print(output.size())
             ### Insert Label
             #print(data_index)
             #print(pred)
             molecules = dataset.data.iloc[list(data_index)]
             labels = torch.tensor(molecules.logP.values)
-            loss, CE_loss, KL_loss, pred_loss = self.criterion(output, tgt, mu, sigma, pred, labels, epoch, frament_count_df)
+            loss, CE_loss, KL_loss, pred_loss = self.criterion(output, tgt, mu, sigma, pred, labels, epoch, penalty_weights)
             #pred_loss.backward()
             loss.backward()
             clip_grad_norm_(self.model.parameters(),
@@ -201,8 +201,8 @@ class Trainer:
         for frag in tqdm(dataset.data.fragments):
             fragment_list.extend(frag.split())
         fragment_counts = pd.Series(fragment_list).value_counts()
-        frament_count_df = pd.DataFrame(fragment_counts, columns=['count']).reset_index().rename(
-            columns={"index": "fragment"})
+        penalty = np.sum(np.log(fragment_counts + 1)) / np.log(fragment_counts + 1)
+        penalty_weights = penalty / np.linalg.norm(penalty)
         ###
         for epoch in range(start_epoch, start_epoch + num_epochs):
             start = time.time()
@@ -211,7 +211,7 @@ class Trainer:
             #mu_stack = self._train_epoch(epoch, loader)
             #return mu_stack
             ###
-            epoch_loss = self._train_epoch(epoch, loader, frament_count_df)
+            epoch_loss = self._train_epoch(epoch, loader, penalty_weights)
             self.losses.append(epoch_loss)
             logger.log('loss', epoch_loss, epoch)
             save_ckpt(self, epoch, filename="last.pt")
