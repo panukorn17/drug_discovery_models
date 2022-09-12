@@ -132,7 +132,7 @@ class Trainer:
             self.optimizer.zero_grad()
             tgt_str_lst = list(tgt_str)
             print(tgt_str_lst)
-            print(penalty_weights[tgt_str_lst])
+            print([penalty_weights[tgt_str_lst_i] for tgt_str_lst_i in tgt_str_lst])
             #print(penalty_weights[tgt_str])
             src, tgt = Variable(src), Variable(tgt)
             if self.config.get('use_gpu'):
