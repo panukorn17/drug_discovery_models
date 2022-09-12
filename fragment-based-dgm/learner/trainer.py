@@ -154,9 +154,9 @@ class Trainer:
             #print(data_index)
             molecules = dataset.data.iloc[list(data_index)]
             data_index_correct = [molecules[molecules['fragments'] == target_str_ls_2_i].index.values for target_str_ls_2_i in target_str_ls_2]
-            molecules_correct = dataset.data.iloc[data_index_correct]
+            #molecules_correct = dataset.data.iloc[data_index_correct]
             print("molecules: ", molecules)
-            print("index correct: ", molecules_correct)
+            print("index correct: ", data_index_correct)
             print("target string list", tgt_str_lst)
             labels = torch.tensor(molecules.logP.values)
             loss, CE_loss, KL_loss, pred_loss = self.criterion(output, tgt, mu, sigma, pred, labels, epoch, tgt_str_lst, penalty_weights)
