@@ -139,7 +139,7 @@ class Trainer:
             target_str_ls_2 = [" ".join(self.vocab.translate(target_i)) for target_i in tgt.cpu().detach().numpy()]
             src_str_ls_2 = [self.vocab.translate(target_i) for target_i in src.cpu().detach().numpy()]
             #print("target string list src", tgt_str_lst)
-            #print("target string list tgt", target_str_ls_2)
+            print("target string list tgt", target_str_ls_2)
             #print("lengths:", lengths)
             #print("index:", data_index)
             src, tgt = Variable(src), Variable(tgt)
@@ -156,11 +156,11 @@ class Trainer:
             molecules = dataset.data.iloc[list(data_index)]
             data_index_correct = [molecules[molecules['fragments'] == target_str_ls_2_i].index.values[0] for target_str_ls_2_i in target_str_ls_2]
             molecules_correct = dataset.data.iloc[data_index_correct]
-            #print("molecules: ", molecules_correct)
+            print("molecules: ", molecules_correct)
             #print("index correct: ", data_index_correct)
             #rint("target string list", tgt_str_lst)
             labels = torch.tensor(molecules_correct.logP.values)
-            #print("labels: ", labels)
+            print("labels: ", labels)
             loss, CE_loss, KL_loss, pred_loss = self.criterion(output, tgt, mu, sigma, pred, labels, epoch, tgt_str_lst, penalty_weights)
             #pred_loss.backward()
             loss.backward()
