@@ -202,7 +202,9 @@ class Loss(nn.Module):
         print("Original translated Target Size:", target.size())
         print("Original translated Target Sample:", target)
         #print("Original Target Sample:", tgt_str_lst)
-        print("target: ", [self.vocab.translate(target_i) for target_i in target.cpu().detach().numpy()])
+        target_str_lst = [self.vocab.translate(target_i) for target_i in target.cpu().detach().numpy()]
+        print("target: ", target_str_lst)
+        print([[penalty_weights[tgt_str_lst_i].values] for tgt_str_lst_i in tgt_str_lst])
         target = target.view(-1)
         #print("Flattened translated Target Size:", target.size())
         output = output.view(-1, output.size(2))
