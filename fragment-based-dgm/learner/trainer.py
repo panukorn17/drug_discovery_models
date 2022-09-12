@@ -135,9 +135,9 @@ class Trainer:
             #print(tgt_str_lst)
             #print([[penalty_weights[tgt_str_lst_i].values] for tgt_str_lst_i in tgt_str_lst])
             #print(penalty_weights[tgt_str])
-            target_str_ls_2 = [reconstruct(target_i) for target_i in tgt.cpu().detach().numpy()]
+            target_str_ls_2 = [self.vocab.translate(target_i) for target_i in tgt.cpu().detach().numpy()]
             src_str_ls_2 = [self.vocab.translate(target_i) for target_i in src.cpu().detach().numpy()]
-            print("target string list tgt", target_str_ls_2)
+            print("target string list tgt", " ".join(target_str_ls_2))
             print("target string list src", src_str_ls_2)
             print("lengths:", lengths)
             print("index:", data_index)
