@@ -220,7 +220,7 @@ class Trainer:
         fragment_counts = pd.Series(fragment_list).value_counts()
         fragment_counts = fragment_counts.append(pd.Series(len(dataset.data)))
         penalty = np.sum(np.log(fragment_counts + 1)) / np.log(fragment_counts + 1)
-        penalty_weights = penalty / np.linalg.norm(penalty) * 1000
+        penalty_weights = penalty / np.linalg.norm(penalty)
         ###
         for epoch in range(start_epoch, start_epoch + num_epochs):
             start = time.time()
