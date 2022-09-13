@@ -165,7 +165,7 @@ class Frag2Mol(nn.Module):
         embeddings1 = F.dropout(embeddings, p=self.dropout, training=self.training)
         z, mu, sigma = self.encoder(inputs, embeddings1, lengths)
         ### Add Property Predictor
-        mu = F.normalize(mu)
+        mu_norm = F.normalize(mu)
         pred_1 = self.mlp(Variable(mu_norm[0, :, :]))
         pred_2 = self.mlp(Variable(mu_norm[1, :, :]))
         pred = (pred_1 + pred_2)/2
