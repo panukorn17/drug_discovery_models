@@ -166,9 +166,10 @@ class Frag2Mol(nn.Module):
         z, mu, sigma = self.encoder(inputs, embeddings1, lengths)
         ### Add Property Predictor
         mu_norm = F.normalize(mu)
-        pred_1 = self.mlp(Variable(mu_norm[0, :, :]))
-        pred_2 = self.mlp(Variable(mu_norm[1, :, :]))
-        pred = (pred_1 + pred_2)/2
+        #pred_1 = self.mlp(Variable(mu_norm[0, :, :]))
+        #pred_2 = self.mlp(Variable(mu_norm[1, :, :]))
+        #pred = (pred_1 + pred_2)/2
+        pred = self.mlp(Variable(mu_norm))
         ###
         state = self.latent2rnn(z)
         state = state.view(self.hidden_layers, batch_size, self.hidden_size)
