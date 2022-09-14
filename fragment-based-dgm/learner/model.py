@@ -105,7 +105,7 @@ class MLP(nn.Module):
         y_logp = self.layers_logp(x)
         y_sas = self.layers_sas(x)
         #return x.view(-1)
-        return y_qed.view(-1).cuda(),y_logp.view(-1).cuda(),y_sas.view(-1).cuda() if self.use_gpu else y_qed.view(-1),y_logp.view(-1),y_sas.view(-1)
+        return y_qed.view(-1).cuda(), y_logp.view(-1).cuda(), y_sas.view(-1).cuda() if self.use_gpu else y_qed.view(-1), y_logp.view(-1), y_sas.view(-1)
 
 class Decoder(nn.Module):
     def __init__(self, embed_size, latent_size, hidden_size,
