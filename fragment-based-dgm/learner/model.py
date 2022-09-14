@@ -73,7 +73,7 @@ class MLP(nn.Module):
             nn.Dropout(0.2),
             nn.Linear(64, 32),
             nn.ReLU(),
-            nn.Dropout(0.2),
+            #nn.Dropout(0.2),
             nn.Linear(32, 1)
         )
 
