@@ -70,8 +70,10 @@ class MLP(nn.Module):
         self.layers = nn.Sequential(
             nn.Linear(latent_size, 64),
             nn.ReLU(),
+            nn.Dropout(0.2),
             nn.Linear(64, 32),
             nn.ReLU(),
+            nn.Dropout(0.2),
             nn.Linear(32, 1)
         )
 
