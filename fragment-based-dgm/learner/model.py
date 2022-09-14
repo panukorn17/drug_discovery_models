@@ -71,7 +71,7 @@ class MLP(nn.Module):
             nn.Linear(latent_size, 32),
             nn.ReLU(),
             #nn.Dropout(0.2),
-            nn.Linear(32, 16),
+            nn.Linear(32, 1),
             nn.ReLU(),
             #nn.Dropout(0.2),
             nn.Sigmoid()
