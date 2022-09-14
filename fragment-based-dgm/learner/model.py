@@ -74,7 +74,7 @@ class MLP(nn.Module):
             nn.Linear(32, 16),
             nn.ReLU(),
             #nn.Dropout(0.2),
-            nn.Sigmoid(16)
+            nn.Sigmoid()
         )
 
     def forward(self, x):
