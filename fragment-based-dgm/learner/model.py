@@ -58,7 +58,7 @@ class Encoder(nn.Module):
 ### MLP predictor class
 class MLP(nn.Module):
     def __init__(self, latent_size, use_gpu):
-        super(MLP, self).__init__()
+        super().__init__()
         self.latent_size = latent_size
         self.use_gpu = use_gpu
         #self.relu = nn.ReLU()
