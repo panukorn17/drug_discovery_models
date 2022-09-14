@@ -7,6 +7,7 @@ from torch.autograd import Variable
 from torch.nn.utils import clip_grad_norm_
 from torch.optim import Adam
 from torch.optim.lr_scheduler import StepLR
+from torch.nn import functional as F
 from tqdm import tqdm
 from tensorboardX import SummaryWriter
 
@@ -147,7 +148,7 @@ class Trainer:
                 src = src.cuda()
                 tgt = tgt.cuda()
 
-            output, mu, sigma, z, pred = self.model(src, lengths)
+            output, mu, sigma, z, pred_qed, pred_logp, pred_sas = self.model(src, lengths)
             #print("mu:", mu)
             #print("mu size:", mu.size())
             #print(output.size())
@@ -159,9 +160,11 @@ class Trainer:
             #print("molecules: ", molecules_correct)
             #print("index correct: ", data_index_correct)
             #rint("target string list", tgt_str_lst)
-            labels = torch.tensor(molecules_correct.qed.values)
+            labels_qed = torch.tensor(molecules_correct.qed.values)
+            labels_logp = torch.tensor(molecules_correct.qed.values)
+            labels_sas = torch.tensor(molecules_correct.qed.values)
             #print("labels: ", labels)
-            loss, CE_loss, KL_loss, pred_loss = self.criterion(output, tgt, mu, sigma, pred, labels, epoch, tgt_str_lst, penalty_weights)
+            loss, CE_loss, KL_loss, pred_qed_loss, pred_logp_loss, pred_sas_loss = self.criterion(output, tgt, mu, sigma, pred_qed, pred_logp, pred_sas, labels_qed, labels_logp, labels_sas, epoch, tgt_str_lst, penalty_weights)
             #pred_loss.backward()
             loss.backward()
             clip_grad_norm_(self.model.parameters(),
@@ -174,8 +177,10 @@ class Trainer:
             ### Teddy Code
             if idx == 0 or idx % 10000 == 0:
                 print("batch ", idx, " loss: ", epoch_loss/(idx+1))
-                print("mu", mu, "pred ", pred, " labels: ", labels, "loss:", 1/len(labels)*torch.sum((pred - labels.cuda())**2))
-                print("CE Loss ", CE_loss, " KL Loss: ", KL_loss, "Prediction Loss:", pred_loss)
+                print("pred qed", pred_qed, " labels qed: ", labels_qed, "loss qed:", F.binary_cross_entropy(pred_qed.type(torch.float64), labels_qed.cuda()))
+                print("pred logp", pred_logp, " labels logp: ", labels_logp, "loss logp:", F.mse_loss(pred_logp.type(torch.float64), labels_logp.cuda()))
+                print("pred sas", pred_sas, " labels sas: ", labels_sas, "loss sas:", F.mse_loss(pred_sas.type(torch.float64), labels_sas.cuda()))
+                print("CE Loss ", CE_loss, " KL Loss: ", KL_loss, "Prediction Loss:", pred_qed_loss+pred_logp_loss+pred_sas_loss)
             ###
         return epoch_loss / len(loader)
 
