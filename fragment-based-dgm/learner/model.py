@@ -58,7 +58,7 @@ class Encoder(nn.Module):
 ### MLP predictor class
 class MLP(nn.Module):
     def __init__(self, latent_size, use_gpu):
-        super().__init__()
+        super(MLP, self).__init__()
         self.latent_size = latent_size
         self.use_gpu = use_gpu
         #self.relu = nn.ReLU()
@@ -74,7 +74,7 @@ class MLP(nn.Module):
             nn.Linear(32, 16),
             nn.ReLU(),
             #nn.Dropout(0.2),
-            nn.Sigmoid(16, 1)
+            nn.Linear(16, 1)
         )
 
     def forward(self, x):
@@ -253,5 +253,5 @@ class Loss(nn.Module):
         # return alpha * CE_loss + (1-alpha) * KL_loss
 
         ### Compute prediction loss
-        pred_loss = F.binary_cross_entropy(pred.type(torch.float64), labels.cuda())
+        pred_loss = F.mse_loss(pred.type(torch.float64), labels.cuda())
         return CE_loss + KL_loss + pred_loss, CE_loss, KL_loss, pred_loss
