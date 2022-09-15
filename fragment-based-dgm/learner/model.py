@@ -221,7 +221,7 @@ class Loss(nn.Module):
         self.loss_fn = nn.MSELoss()
         self.vocab = vocab
 
-    def forward(self, output, target, mu, sigma, pred_qed, pred_logp, pred_sas, labels_qed, labels_logp, labels_sas, epoch, tgt_str_lst, penalty_weights):
+    def forward(self, output, target, mu, sigma, pred_logp, pred_sas, labels_qed, labels_logp, labels_sas, epoch, tgt_str_lst, penalty_weights):
         output = F.log_softmax(output, dim=1)
         #print("molecules logP", labels)
         #print("Original Output Size:", output.size())

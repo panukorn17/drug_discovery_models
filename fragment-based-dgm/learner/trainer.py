@@ -164,7 +164,7 @@ class Trainer:
             labels_logp = torch.tensor(molecules_correct.logP.values)
             labels_sas = torch.tensor(molecules_correct.SAS.values)
             #print("labels: ", labels)
-            loss, CE_loss, KL_loss, pred_logp_loss, pred_sas_loss = self.criterion(output, tgt, mu, sigma, pred_qed, pred_logp, pred_sas, labels_qed, labels_logp, labels_sas, epoch, tgt_str_lst, penalty_weights)
+            loss, CE_loss, KL_loss, pred_logp_loss, pred_sas_loss = self.criterion(output, tgt, mu, sigma, pred_logp, pred_sas, labels_qed, labels_logp, labels_sas, epoch, tgt_str_lst, penalty_weights)
             #pred_loss.backward()
             loss.backward()
             clip_grad_norm_(self.model.parameters(),
