@@ -77,19 +77,24 @@ class MLP(nn.Module):
             nn.Sigmoid()
         )
         self.layers_logp = nn.Sequential(
-            nn.Linear(latent_size, 32),
+            nn.Linear(latent_size, 64),
             nn.ReLU(),
-            #nn.Dropout(0.2),
-            nn.Linear(32, 1),
-            #nn.ReLU(),
-            #nn.Dropout(0.2),
+            nn.Dropout(0.2),
+            nn.Linear(32, 16),
+            nn.ReLU(),
+            nn.Dropout(0.2),
+            nn.Linear(16, 1)
             #nn.Sigmoid()
         )
         self.layers_sas = nn.Sequential(
-            nn.Linear(latent_size, 32),
+            nn.Linear(latent_size, 64),
             nn.ReLU(),
             #nn.Dropout(0.2),
             nn.Linear(32, 1),
+            nn.Linear(32, 16),
+            nn.ReLU(),
+            nn.Dropout(0.2),
+            nn.Linear(16, 1)
             #nn.ReLU(),
             #nn.Dropout(0.2),
             #nn.Sigmoid()
@@ -101,11 +106,11 @@ class MLP(nn.Module):
         #x = self.linear2(x)
         #x = self.relu(x)
         #x = self.linear3(x)
-        y_qed = self.layers_qed(x)
+        #y_qed = self.layers_qed(x)
         y_logp = self.layers_logp(x)
         y_sas = self.layers_sas(x)
         #return x.view(-1)
-        return y_qed.view(-1).cuda(), y_logp.view(-1).cuda(), y_sas.view(-1).cuda()
+        return y_logp.view(-1).cuda(), y_sas.view(-1).cuda()
 
 class Decoder(nn.Module):
     def __init__(self, embed_size, latent_size, hidden_size,
@@ -191,7 +196,7 @@ class Frag2Mol(nn.Module):
         #pred_1 = self.mlp(Variable(mu_norm[0, :, :]))
         #pred_2 = self.mlp(Variable(mu_norm[1, :, :]))
         #pred = (pred_1 + pred_2)/2
-        pred_qed, pred_logp, pred_sas = self.mlp(Variable(mu_norm))
+        pred_logp, pred_sas = self.mlp(Variable(mu_norm))
         ###
         state = self.latent2rnn(z)
         state = state.view(self.hidden_layers, batch_size, self.hidden_size)
@@ -199,7 +204,7 @@ class Frag2Mol(nn.Module):
         output, state = self.decoder(embeddings2, state, lengths)
         #return output, mu, sigma
         ### Teddy Code
-        return output, mu, sigma, z, pred_qed, pred_logp, pred_sas
+        return output, mu, sigma, z, pred_logp, pred_sas
 
     def load_embeddings(self):
         filename = f'emb_{self.embed_size}.dat'
@@ -273,7 +278,7 @@ class Loss(nn.Module):
         # return alpha * CE_loss + (1-alpha) * KL_loss
 
         ### Compute prediction loss
-        pred_qed_loss = F.binary_cross_entropy(pred_qed.type(torch.float64), labels_qed.cuda())
+        #pred_qed_loss = F.binary_cross_entropy(pred_qed.type(torch.float64), labels_qed.cuda())
         pred_logp_loss = F.mse_loss(pred_logp.type(torch.float64), labels_logp.cuda())
         pred_sas_loss = F.mse_loss(pred_sas.type(torch.float64), labels_sas.cuda())
-        return CE_loss + KL_loss + pred_qed_loss + pred_logp_loss + pred_sas_loss, CE_loss, KL_loss, pred_qed_loss, pred_logp_loss, pred_sas_loss
+        return CE_loss + KL_loss + pred_logp_loss + pred_sas_loss, CE_loss, KL_loss, pred_logp_loss, pred_sas_loss
