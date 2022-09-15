@@ -148,7 +148,7 @@ class Trainer:
                 src = src.cuda()
                 tgt = tgt.cuda()
 
-            output, mu, sigma, z, pred_qed, pred_logp, pred_sas = self.model(src, lengths)
+            output, mu, sigma, z, pred_logp, pred_sas = self.model(src, lengths)
             #print("mu:", mu)
             #print("mu size:", mu.size())
             #print(output.size())
