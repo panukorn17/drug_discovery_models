@@ -89,8 +89,7 @@ class MLP(nn.Module):
         self.layers_sas = nn.Sequential(
             nn.Linear(latent_size, 64),
             nn.ReLU(),
-            #nn.Dropout(0.2),
-            nn.Linear(32, 1),
+            nn.Dropout(0.2),
             nn.Linear(32, 16),
             nn.ReLU(),
             nn.Dropout(0.2),
