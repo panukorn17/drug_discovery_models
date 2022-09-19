@@ -264,15 +264,15 @@ class Loss(nn.Module):
         nb_tokens = int(torch.sum(mask).item())
 
         # pick the values for the label and zero out the rest with the mask
-        output = output[range(output.size(0)), target] * target_pen_weight.cuda() * mask
-        #output = output[range(output.size(0)), target] * mask
+        #output = output[range(output.size(0)), target] * target_pen_weight.cuda() * mask
+        output = output[range(output.size(0)), target] * mask
         #print(output)
 
         # compute cross entropy loss which ignores all <PAD> tokens
         CE_loss = -torch.sum(output) / nb_tokens
 
         # compute KL Divergence
-        KL_loss = -0.5 * torch.sum(1 + sigma - mu.pow(2) - sigma.exp())
+        KL_loss = -0.5 * torch.sum(1 + sigma - mu.pow(2) - sigma.exp()) * 0.1
         # alpha = (epoch + 1)/(self.config.get('num_epochs') + 1)
         # return alpha * CE_loss + (1-alpha) * KL_loss
 
