@@ -94,7 +94,7 @@ def fragment_recursive(mol, frags):
                                       bondIndices=[bond_idxs[0]],
                                       dummyLabels=[(0, 0)])
         head, tail = Chem.GetMolFrags(broken, asMols=True)
-        print(mol_to_smiles(head), mol_to_smiles(tail))
+        #print(mol_to_smiles(head), mol_to_smiles(tail))
         frags.append(head)
 
         fragment_recursive(tail, frags)
