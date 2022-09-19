@@ -322,7 +322,7 @@ class Loss(nn.Module):
         CE_loss = -torch.sum(output) / nb_tokens
 
         # compute KL Divergence
-        KL_loss = -0.5 * torch.sum(1 + sigma - mu.pow(2) - sigma.exp()) * 0.1
+        KL_loss = -0.5 * torch.sum(1 + sigma - mu.pow(2) - sigma.exp())
         # alpha = (epoch + 1)/(self.config.get('num_epochs') + 1)
         # return alpha * CE_loss + (1-alpha) * KL_loss
 
