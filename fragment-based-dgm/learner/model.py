@@ -242,6 +242,8 @@ class Frag2Mol(nn.Module):
             0.5 * (nz * math.log(2 * math.pi) + logvar.sum(-1))
         # log q(z): aggregate posterior
         log_qz = self.log_sum_exp(log_density, dim=1) - math.log(x_batch)
+        log_qz
+        log_qz.size()
         return (neg_entropy - log_qz.mean(-1)).item()
 
     def log_sum_exp(self, value, dim=None, keepdim=False):
