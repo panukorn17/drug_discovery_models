@@ -244,7 +244,7 @@ class Frag2Mol(nn.Module):
         log_qz = self.log_sum_exp(log_density, dim=1) - math.log(x_batch)
         return (neg_entropy - log_qz.mean(-1)).item()
 
-    def log_sum_exp(value, dim=None, keepdim=False):
+    def log_sum_exp(self, value, dim=None, keepdim=False):
         """Numerically stable implementation of the operation
         value.exp().sum(dim, keepdim).log()
         """
