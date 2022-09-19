@@ -114,6 +114,7 @@ class Trainer:
             self.model = self.model.cuda()
 
         self.losses = []
+        self.mutual_information = []
         self.best_loss = np.float('inf')
         self.scores = []
         self.best_score = - np.float('inf')
@@ -129,6 +130,7 @@ class Trainer:
             self.scheduler.step()
         #for idx, (src, tgt, lengths) in enumerate(loader):
         ### Teddy Code
+        total_mutual_info = 0
         for idx, (src, tgt, lengths, data_index, tgt_str) in enumerate(loader):
             ###
             self.optimizer.zero_grad()
@@ -149,6 +151,8 @@ class Trainer:
                 tgt = tgt.cuda()
 
             output, mu, sigma, z, pred_logp, pred_sas = self.model(src, lengths)
+            mutual_info = self.model.calc_mi(src, lengths)
+            total_mutual_info += mutual_info * src.size(0)
             #print("mu:", mu)
             #print("mu size:", mu.size())
             #print(output.size())
@@ -182,7 +186,7 @@ class Trainer:
                 print("pred sas", pred_sas, " labels sas: ", labels_sas, "loss sas:", F.mse_loss(pred_sas.type(torch.float64), labels_sas.cuda()))
                 print("CE Loss ", CE_loss, " KL Loss: ", KL_loss, "Prediction Loss:", pred_logp_loss+pred_sas_loss)
             ###
-        return epoch_loss / len(loader)
+        return epoch_loss / len(loader), total_mutual_info
 
     def _valid_epoch(self, epoch, loader):
         use_gpu = self.config.get('use_gpu')
@@ -227,6 +231,7 @@ class Trainer:
         penalty = np.sum(np.log(fragment_counts + 1)) / np.log(fragment_counts + 1)
         penalty_weights = penalty / np.linalg.norm(penalty)
         ###
+        total_mutual_info_list = []
         for epoch in range(start_epoch, start_epoch + num_epochs):
             start = time.time()
 
@@ -234,8 +239,10 @@ class Trainer:
             #mu_stack = self._train_epoch(epoch, loader)
             #return mu_stack
             ###
-            epoch_loss = self._train_epoch(epoch, loader, penalty_weights)
+            epoch_loss, total_mutual_info = self._train_epoch(epoch, loader, penalty_weights)
+            self.mutual_information.append(total_mutual_info)
             self.losses.append(epoch_loss)
+            print("epoch: "+epoch+", mutual_information: "+total_mutual_info)
             logger.log('loss', epoch_loss, epoch)
             save_ckpt(self, epoch, filename="last.pt")
             
