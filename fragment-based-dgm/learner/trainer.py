@@ -150,9 +150,9 @@ class Trainer:
                 src = src.cuda()
                 tgt = tgt.cuda()
 
-            output, mu, sigma, z, pred_logp, pred_sas = self.model(src, lengths)
-            mutual_info = self.model.calc_mi(src, lengths)
-            total_mutual_info += mutual_info * src.size(0)
+            output, mu, sigma, z, pred_logp = self.model(src, lengths)
+            #mutual_info = self.model.calc_mi(src, lengths)
+            #total_mutual_info += mutual_info * src.size(0)
             #print("mu:", mu)
             #print("mu size:", mu.size())
             #print(output.size())
@@ -166,9 +166,9 @@ class Trainer:
             #rint("target string list", tgt_str_lst)
             #labels_qed = torch.tensor(molecules_correct.qed.values)
             labels_logp = torch.tensor(molecules_correct.logP.values)
-            labels_sas = torch.tensor(molecules_correct.SAS.values)
+            #labels_sas = torch.tensor(molecules_correct.SAS.values)
             #print("labels: ", labels)
-            loss, CE_loss, KL_loss, pred_logp_loss, pred_sas_loss = self.criterion(output, tgt, mu, sigma, pred_logp, pred_sas, labels_logp, labels_sas, epoch, tgt_str_lst, penalty_weights)
+            loss, CE_loss, KL_loss, pred_logp_loss = self.criterion(output, tgt, mu, sigma, pred_logp, labels_logp, epoch, tgt_str_lst, penalty_weights)
             #pred_loss.backward()
             loss.backward()
             clip_grad_norm_(self.model.parameters(),
@@ -183,10 +183,10 @@ class Trainer:
                 print("batch ", idx, " loss: ", epoch_loss/(idx+1))
                 #print("pred qed", pred_qed, " labels qed: ", labels_qed, "loss qed:", F.binary_cross_entropy(pred_qed.type(torch.float64), labels_qed.cuda()))
                 print("pred logp", pred_logp, " labels logp: ", labels_logp, "loss logp:", F.mse_loss(pred_logp.type(torch.float64), labels_logp.cuda()))
-                print("pred sas", pred_sas, " labels sas: ", labels_sas, "loss sas:", F.mse_loss(pred_sas.type(torch.float64), labels_sas.cuda()))
+                #print("pred sas", pred_sas, " labels sas: ", labels_sas, "loss sas:", F.mse_loss(pred_sas.type(torch.float64), labels_sas.cuda()))
                 print("CE Loss ", CE_loss, " KL Loss: ", KL_loss, "Prediction Loss:", pred_logp_loss+pred_sas_loss)
             ###
-        return epoch_loss / len(loader), total_mutual_info
+        return epoch_loss / len(loader)
 
     def _valid_epoch(self, epoch, loader):
         use_gpu = self.config.get('use_gpu')
