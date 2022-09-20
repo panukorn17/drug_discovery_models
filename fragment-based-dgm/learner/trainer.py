@@ -184,7 +184,7 @@ class Trainer:
                 #print("pred qed", pred_qed, " labels qed: ", labels_qed, "loss qed:", F.binary_cross_entropy(pred_qed.type(torch.float64), labels_qed.cuda()))
                 print("pred logp", pred_logp, " labels logp: ", labels_logp, "loss logp:", F.mse_loss(pred_logp.type(torch.float64), labels_logp.cuda()))
                 #print("pred sas", pred_sas, " labels sas: ", labels_sas, "loss sas:", F.mse_loss(pred_sas.type(torch.float64), labels_sas.cuda()))
-                print("CE Loss ", CE_loss, " KL Loss: ", KL_loss, "Prediction Loss:", pred_logp_loss+pred_sas_loss)
+                print("CE Loss ", CE_loss, " KL Loss: ", KL_loss, "Prediction Loss:", pred_logp_loss)
             ###
         return epoch_loss / len(loader)
 
