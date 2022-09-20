@@ -239,10 +239,10 @@ class Trainer:
             #mu_stack = self._train_epoch(epoch, loader)
             #return mu_stack
             ###
-            epoch_loss, total_mutual_info = self._train_epoch(epoch, loader, penalty_weights)
-            self.mutual_information.append(total_mutual_info)
+            epoch_loss = self._train_epoch(epoch, loader, penalty_weights)
+            #self.mutual_information.append(total_mutual_info)
             self.losses.append(epoch_loss)
-            print("epoch: "+str(epoch)+", mutual_information: "+str(total_mutual_info))
+            #print("epoch: "+str(epoch)+", mutual_information: "+str(total_mutual_info))
             logger.log('loss', epoch_loss, epoch)
             save_ckpt(self, epoch, filename="last.pt")
             
