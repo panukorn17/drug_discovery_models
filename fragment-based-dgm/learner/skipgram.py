@@ -141,7 +141,7 @@ def train_embeddings(config, data):
             negative=5,
             workers=20,
             epochs=10,
-            sg=1)
+            sg=0)
 
         vocab = w2v.wv.key_to_index
         embeddings = w2v.wv[vocab]
@@ -185,7 +185,8 @@ def train_embeddings(config, data):
             negative=5,
             workers=20,
             epochs=10,
-            sg=1)
+            sg=0,
+            compute_loss=True)
 
     vocab = w2v.wv.key_to_index
     w2i.update({k: v + start_idx for (k, v) in vocab.items()})
