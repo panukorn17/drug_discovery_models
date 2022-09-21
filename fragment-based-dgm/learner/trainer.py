@@ -179,7 +179,7 @@ class Trainer:
 
             self.optimizer.step()
             ### Teddy Code
-            if idx == 0 or idx % 10000 == 0:
+            if idx == 0 or idx % 1000 == 0:
                 print("batch ", idx, " loss: ", epoch_loss/(idx+1))
                 #print("pred qed", pred_qed, " labels qed: ", labels_qed, "loss qed:", F.binary_cross_entropy(pred_qed.type(torch.float64), labels_qed.cuda()))
                 print("pred logp", pred_logp, " labels logp: ", labels_logp, "loss logp:", F.mse_loss(pred_logp.type(torch.float64), labels_logp.cuda()))
