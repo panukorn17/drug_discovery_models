@@ -144,7 +144,7 @@ class Trainer:
             #print("target string list src", tgt_str_lst)
             #print("target string list tgt", target_str_ls_2)
             #print("lengths:", lengths)
-            #print("index:", data_index)
+            print("index:", data_index)
             src, tgt = Variable(src), Variable(tgt)
             if self.config.get('use_gpu'):
                 src = src.cuda()
@@ -162,7 +162,7 @@ class Trainer:
             data_index_correct = [molecules[molecules['fragments'] == target_str_ls_2_i].index.values[0] for target_str_ls_2_i in target_str_ls_2]
             molecules_correct = dataset.data.iloc[data_index_correct]
             #print("molecules: ", molecules_correct)
-            #print("index correct: ", data_index_correct)
+            print("index correct: ", data_index_correct)
             #rint("target string list", tgt_str_lst)
             #labels_qed = torch.tensor(molecules_correct.qed.values)
             labels_logp = torch.tensor(molecules_correct.logP.values)

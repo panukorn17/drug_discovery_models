@@ -78,13 +78,13 @@ class MLP(nn.Module):
             nn.Sigmoid()
         )
         self.layers_logp = nn.Sequential(
-            nn.Linear(latent_size, 1000),
+            nn.Linear(latent_size, 64),
             nn.ReLU(),
             #nn.Dropout(0.2),
-            nn.Linear(1000, 500),
+            nn.Linear(64, 32),
             nn.ReLU(),
             #nn.Dropout(0.2),
-            nn.Linear(500, 1)
+            nn.Linear(32, 1)
             #nn.Sigmoid()
         )
         self.layers_sas = nn.Sequential(
