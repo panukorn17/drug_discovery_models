@@ -78,13 +78,13 @@ class MLP(nn.Module):
             nn.Sigmoid()
         )
         self.layers_logp = nn.Sequential(
-            nn.Linear(latent_size, 1000),
+            nn.Linear(latent_size, 64),
             nn.ReLU(),
             #nn.Dropout(0.2),
-            nn.Linear(1000, 500),
+            nn.Linear(64, 32),
             nn.ReLU(),
             #nn.Dropout(0.2),
-            nn.Linear(500, 1)
+            nn.Linear(32, 1)
             #nn.Sigmoid()
         )
         self.layers_sas = nn.Sequential(
@@ -330,4 +330,4 @@ class Loss(nn.Module):
         #pred_qed_loss = F.binary_cross_entropy(pred_qed.type(torch.float64), labels_qed.cuda())
         pred_logp_loss = F.mse_loss(pred_logp.type(torch.float64), labels_logp.cuda())
         #pred_sas_loss = F.mse_loss(pred_sas.type(torch.float64), labels_sas.cuda())
-        return CE_loss + KL_loss + pred_logp_loss , CE_loss, KL_loss, pred_logp_loss
+        return CE_loss + pred_logp_loss , CE_loss, KL_loss, pred_logp_loss
