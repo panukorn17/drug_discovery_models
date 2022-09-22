@@ -177,7 +177,7 @@ class Trainer:
 
             self.optimizer.step()
             ### Teddy Code
-            if idx == 0 or idx % 1000 == 0:
+            if idx == 0 or idx % 100 == 0:
                 print("index:", data_index)
                 print("index correct: ", data_index_correct)
                 print("batch ", idx, " loss: ", epoch_loss/(idx+1))
