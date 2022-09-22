@@ -136,7 +136,7 @@ class Decoder(nn.Module):
 
     def forward(self, embeddings, state, lengths):
         batch_size = embeddings.size(0)
-        packed = pack_padded_sequence(embeddings, lengths, batch_first=True, enforce_sorted=False)
+        packed = pack_padded_sequence(embeddings, lengths, batch_first=True)
         hidden, state = self.rnn(packed, state)
         state = state.view(self.hidden_layers, batch_size, self.hidden_size)
         hidden, _ = pad_packed_sequence(hidden, batch_first=True)

@@ -6,10 +6,16 @@ from tqdm import tqdm
 
 from gensim.models import Word2Vec
 from sklearn.cluster import KMeans
+from mol2vec.features import mol2alt_sentence, mol2sentence, MolSentence, DfVec, sentences2vec
+from gensim.models import word2vec
 
 from utils.config import set_random_seed
 from utils.filesystem import save_pickle, load_pickle
+from molecules.conversion import (
+    mols_from_smiles, mol_to_smiles, mols_to_smiles, canonicalize)
 
+#Loading pre-trained model via word2vec
+model = word2vec.Word2Vec.load('./DATA/model_300dim.pkl')
 
 SOS_TOKEN = '<SOS>'
 PAD_TOKEN = '<PAD>'
@@ -127,10 +133,8 @@ def train_embeddings(config, data):
     w2w_infreq = None
     c2w_infreq = None
     start_idx = len(TOKENS)
-    ###
-    df_fragment_statistics_unique_infreq = pd.read_csv('DATA/CHEMBL/PROCESSED/df_fragment_statistics_unique_infreq.smi')
-    ###
     if use_mask:
+        df_fragment_statistics_unique_infreq = pd.read_csv('DATA/CHEMBL/PROCESSED/df_fragment_statistics_unique_infreq.smi')
         sentences = [s.split(" ") for s in data.fragments]
         # first word embedding
         w2v = Word2Vec(
@@ -174,25 +178,39 @@ def train_embeddings(config, data):
             data.append(sentence_sub)
     else:
         data = [s.split(" ") for s in data.fragments]
-    
+
+    data = [item for sublist in data for item in sublist]
+    fragment_unique = list(set(data))
     w2i = {PAD_TOKEN: 0, SOS_TOKEN: 1, EOS_TOKEN: 2}
 
-    w2v = Word2Vec(
-            data,
-            vector_size=embed_size,
-            window=embed_window,
-            min_count=1,
-            negative=5,
-            workers=20,
-            epochs=150,
-            sg=1)
+    #w2v = Word2Vec(
+    #        data,
+    #        vector_size=embed_size,
+    #        window=embed_window,
+    #        min_count=1,
+    #        negative=5,
+    #        workers=20,
+    #        epochs=150,
+    #        sg=1)
 
-    vocab = w2v.wv.key_to_index
-    w2i.update({k: v + start_idx for (k, v) in vocab.items()})
+    #vocab = w2v.wv.key_to_index
+    #w2i.update({k: v + start_idx for (k, v) in vocab.items()})
+    #i2w = {v: k for (k, v) in w2i.items()}
+    w2i.update({k: v + start_idx for v, (k) in enumerate(fragment_unique)})
     i2w = {v: k for (k, v) in w2i.items()}
-    
-    tokens = np.random.uniform(-0.05, 0.05, size=(start_idx, embed_size))
-    embeddings = np.vstack([tokens, w2v.wv[vocab]])
+    fragment_unique_mol = mols_from_smiles(fragment_unique)
+    fragment_unique_mol_df = pd.DataFrame(fragment_unique_mol, columns=['mol'])
+    # Constructing sentences
+    fragment_unique_mol_df['sentence'] = fragment_unique_mol_df.apply(
+        lambda x: MolSentence(mol2alt_sentence(x['mol'], 1)), axis=1)
+
+    # Extracting embeddings to a numpy.array
+    # Note that we always should mark unseen='UNK' in sentence2vec() so that model is taught how to handle unknown substructures
+    fragment_unique_mol_df['mol2vec'] = [DfVec(x) for x in
+                                         sentences2vec(fragment_unique_mol_df['sentence'], model, unseen='UNK')]
+    X = np.array([x.vec for x in fragment_unique_mol_df['mol2vec']])
+    tokens = np.random.uniform(-0.05, 0.05, size=(start_idx, 100))
+    embeddings = np.vstack([tokens, X])
     path = config.path('config') / f'emb_{embed_size}.dat'
     np.savetxt(path, embeddings, delimiter=",")
 
