@@ -13,7 +13,7 @@ class DataCollator:
         self.vocab = vocab
 
     def merge(self, sequences):
-        sequences = sorted(sequences, key=len, reverse=True)
+        #sequences = sorted(sequences, key=len, reverse=True)
         lengths = [len(seq) for seq in sequences]
         padded_seqs = np.full((len(sequences), max(lengths)), self.vocab.PAD)
         for i, seq in enumerate(sequences):
@@ -80,7 +80,7 @@ class FragmentDataset(Dataset):
                             collate_fn=collator,
                             batch_size=self.config.get('batch_size'),
                             num_workers=24,
-                            shuffle=True,
+                            shuffle=False,
                             pin_memory=False)
         end = time.time() - start
         elapsed = time.strftime("%H:%M:%S", time.gmtime(end))
