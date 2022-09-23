@@ -193,7 +193,7 @@ class Frag2Mol(nn.Module):
         #embeddings1 = F.dropout(embeddings, p=self.dropout, training=self.training)
         vec_frag_arr = np.zeros(self.latent_size)
         for idx2, (src_i) in enumerate(inputs):
-            vec_frag_sum = np.sum(embeddings[src_i[src_i>2]],0)
+            vec_frag_sum = np.sum(embeddings, 0)
             if idx2 == 0:
                 vec_frag_arr = vec_frag_sum
             else:
