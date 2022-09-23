@@ -191,14 +191,8 @@ class Frag2Mol(nn.Module):
         embeddings = self.embedder(inputs[inputs > 2])
         #print(embeddings)
         #embeddings1 = F.dropout(embeddings, p=self.dropout, training=self.training)
-        vec_frag_arr = np.zeros(self.latent_size)
-        for idx2, (src_i) in enumerate(inputs):
-            vec_frag_sum = np.sum(embeddings, 0)
-            if idx2 == 0:
-                vec_frag_arr = vec_frag_sum
-            else:
-                vec_frag_arr = np.vstack((vec_frag_arr, vec_frag_sum))
-        print(vec_frag_arr)
+        vec_frag_sum = np.sum(embeddings, 0)
+        print(vec_frag_sum)
         z, mu, sigma = self.encoder(inputs, embeddings1, lengths)
         ### Add Property Predictor
         mu_norm = F.normalize(mu)
