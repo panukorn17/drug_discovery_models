@@ -190,7 +190,7 @@ class Frag2Mol(nn.Module):
         #print(inputs)
         embeddings = self.embedder(inputs[inputs > 2])
         print(embeddings)
-        print(embeddings.shape())
+        print(embeddings.size())
         #embeddings1 = F.dropout(embeddings, p=self.dropout, training=self.training)
         #vec_frag_sum = np.sum(embeddings, 0)
         #print(vec_frag_sum)
