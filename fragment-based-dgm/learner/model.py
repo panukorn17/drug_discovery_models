@@ -195,7 +195,7 @@ class Frag2Mol(nn.Module):
                 vec_frag_arr = vec_frag_sum
             else:
                 vec_frag_arr = torch.vstack((vec_frag_arr, vec_frag_sum))
-        #embeddings = self.embedder(inputs[inputs > 2])
+        embeddings = self.embedder(inputs)
         #print(vec_frag_arr)
         #print(vec_frag_arr.size())
         #embeddings1 = F.dropout(embeddings, p=self.dropout, training=self.training)
