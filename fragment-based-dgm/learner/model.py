@@ -342,4 +342,4 @@ class Loss(nn.Module):
         #pred_qed_loss = F.binary_cross_entropy(pred_qed.type(torch.float64), labels_qed.cuda())
         pred_logp_loss = F.mse_loss(pred_logp.type(torch.float64), labels_logp.cuda())
         #pred_sas_loss = F.mse_loss(pred_sas.type(torch.float64), labels_sas.cuda())
-        return pred_logp_loss , CE_loss, KL_loss, pred_logp_loss
+        return CE_loss + pred_logp_loss , CE_loss, KL_loss, pred_logp_loss
