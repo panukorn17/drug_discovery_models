@@ -355,7 +355,7 @@ class Loss(nn.Module):
         CE_loss = -torch.sum(output) / nb_tokens
 
         # compute KL Divergence
-        KL_loss = -0.5 * torch.sum(1 + sigma - mu.pow(2) - sigma.exp())
+        KL_loss = -0.5 * torch.mean(1 + sigma - mu.pow(2) - sigma.exp())
         # alpha = (epoch + 1)/(self.config.get('num_epochs') + 1)
         # return alpha * CE_loss + (1-alpha) * KL_loss
 
@@ -363,7 +363,7 @@ class Loss(nn.Module):
         #pred_qed_loss = F.binary_cross_entropy(pred_qed.type(torch.float64), labels_qed.cuda())
         pred_logp_loss = F.mse_loss(pred_logp.type(torch.float64), labels_logp.cuda())
         #pred_sas_loss = F.mse_loss(pred_sas.type(torch.float64), labels_sas.cuda())
-        if KL_loss > 500000:
+        if KL_loss > 10000000:
             total_loss = CE_loss + pred_logp_loss
         else:
             total_loss = CE_loss + beta[epoch]*KL_loss + pred_logp_loss
