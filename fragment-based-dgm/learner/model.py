@@ -27,9 +27,9 @@ class Encoder(nn.Module):
             batch_first=True)
 
         self.rnn2mean = nn.Sequential(
-            nn.Linear(self.embed_size, 200),
+            nn.Linear(self.embed_size, 64),
             nn.ReLU(),
-            nn.Linear(200, self.latent_size)
+            nn.Linear(64, self.latent_size)
         )
         #    # nn.Dropout(0.2),
         #    nn.ReLU(),
@@ -42,9 +42,9 @@ class Encoder(nn.Module):
         #    out_features=self.latent_size)
 
         self.rnn2logv =  nn.Sequential(
-            nn.Linear(self.embed_size, 200),
+            nn.Linear(self.embed_size, 64),
             nn.ReLU(),
-            nn.Linear(200, self.latent_size)
+            nn.Linear(64, self.latent_size)
         )
         # nn.Linear(
         #    in_features=self.embed_size,
@@ -300,7 +300,7 @@ class Loss(nn.Module):
         self.loss_fn = nn.MSELoss()
         self.vocab = vocab
 
-    def forward(self, output, target, mu, sigma, pred_logp, labels_logp, epoch, tgt_str_lst, penalty_weights):
+    def forward(self, output, target, mu, sigma, pred_logp, labels_logp, epoch, tgt_str_lst, penalty_weights, beta):
         output = F.log_softmax(output, dim=1)
         #print("molecules logP", labels)
         #print("Original Output Size:", output.size())
@@ -359,8 +359,8 @@ class Loss(nn.Module):
         #pred_qed_loss = F.binary_cross_entropy(pred_qed.type(torch.float64), labels_qed.cuda())
         pred_logp_loss = F.mse_loss(pred_logp.type(torch.float64), labels_logp.cuda())
         #pred_sas_loss = F.mse_loss(pred_sas.type(torch.float64), labels_sas.cuda())
-        if KL_loss > 500000:
+        if math.isinf(beta[epoch]*KL_loss):
             total_loss = CE_loss + pred_logp_loss
         else:
-            total_loss = CE_loss + KL_loss + pred_logp_loss
-        return  total_loss, CE_loss, KL_loss, pred_logp_loss
+            total_loss = CE_loss + beta[epoch]*KL_loss + pred_logp_loss
+        return total_loss, CE_loss, KL_loss, pred_logp_loss

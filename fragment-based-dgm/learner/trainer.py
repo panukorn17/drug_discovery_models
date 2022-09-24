@@ -119,7 +119,7 @@ class Trainer:
         self.scores = []
         self.best_score = - np.float('inf')
 
-    def _train_epoch(self, epoch, loader, penalty_weights):
+    def _train_epoch(self, epoch, loader, penalty_weights, beta):
         ###Teddy Code
         dataset = FragmentDataset(self.config)
         ###
@@ -166,7 +166,7 @@ class Trainer:
             labels_logp = torch.tensor(molecules_correct.logP.values)
             #labels_sas = torch.tensor(molecules_correct.SAS.values)
             #print("labels: ", labels)
-            loss, CE_loss, KL_loss, pred_logp_loss = self.criterion(output, tgt, mu, sigma, pred_logp, labels_logp, epoch, tgt_str_lst, penalty_weights)
+            loss, CE_loss, KL_loss, pred_logp_loss = self.criterion(output, tgt, mu, sigma, pred_logp, labels_logp, epoch, tgt_str_lst, penalty_weights, beta)
             #pred_loss.backward()
             loss.backward()
             clip_grad_norm_(self.model.parameters(),
@@ -232,6 +232,14 @@ class Trainer:
         penalty_weights = penalty / np.linalg.norm(penalty)
         ###
         total_mutual_info_list = []
+        #KL weights anneal
+        beta = []
+        while len(beta) < num_epochs:
+            beta.extend(list(np.zeros(10)))
+            beta.extend(list((np.arange(10) + 1) / 100))
+        beta[-10:] = list(np.zeros(10))
+        beta = beta[0:num_epochs]
+
         for epoch in range(start_epoch, start_epoch + num_epochs):
             start = time.time()
 
@@ -239,7 +247,7 @@ class Trainer:
             #mu_stack = self._train_epoch(epoch, loader)
             #return mu_stack
             ###
-            epoch_loss = self._train_epoch(epoch, loader, penalty_weights)
+            epoch_loss = self._train_epoch(epoch, loader, penalty_weights, beta)
             #self.mutual_information.append(total_mutual_info)
             self.losses.append(epoch_loss)
             #print("epoch: "+str(epoch)+", mutual_information: "+str(total_mutual_info))
