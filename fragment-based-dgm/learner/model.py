@@ -26,32 +26,34 @@ class Encoder(nn.Module):
             dropout=dropout,
             batch_first=True)
 
-        self.rnn2mean = nn.Linear(
-            in_features=self.embed_size,
-            out_features=self.latent_size)
-        #nn.Sequential(
-        #    nn.Linear(self.embed_size, 1000),
+        self.rnn2mean = nn.Sequential(
+            nn.Linear(self.embed_size, 1000),
+        #    nn.ReLU(),
+            # nn.Dropout(0.2),
+            nn.Linear(1000, 500),
         #    nn.ReLU(),
         #    # nn.Dropout(0.2),
-        #    nn.Linear(1000, 500),
-        #    nn.ReLU(),
-        #    # nn.Dropout(0.2),
-        #    nn.Linear(500, self.latent_size)
+            nn.Linear(500, self.latent_size)
         #    # nn.Sigmoid()
-        #)
-        self.rnn2logv = nn.Linear(
-            in_features=self.embed_size,
-            out_features=self.latent_size)
-        #nn.Sequential(
-        #    nn.Linear(self.embed_size, 1000),
+        )
+        # nn.Linear(
+        #    in_features=self.embed_size,
+        #    out_features=self.latent_size)
+
+        self.rnn2logv = nn.Sequential(
+            nn.Linear(self.embed_size, 1000),
         #    nn.ReLU(),
         #    #nn.Dropout(0.2),
-        #    nn.Linear(1000, 500),
+            nn.Linear(1000, 500),
         #    nn.ReLU(),
         #    #nn.Dropout(0.2),
-        #    nn.Linear(500, self.latent_size)
+            nn.Linear(500, self.latent_size)
         #    #nn.Sigmoid()
-        #)
+        )
+        # nn.Linear(
+        #    in_features=self.embed_size,
+        #    out_features=self.latent_size)
+
 
     def forward(self, vec_frag_arr):
         batch_size = vec_frag_arr.size(0)
