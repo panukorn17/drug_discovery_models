@@ -238,8 +238,8 @@ class Trainer:
         while len(beta) < num_epochs:
             beta.extend(list(np.zeros(10)))
             beta.extend(list((np.arange(10) + 1) / 100))
-        beta[-10:] = list(np.zeros(10))
-        beta = beta[0:num_epochs]
+        #beta[-10:] = list(np.zeros(10))
+        #beta = beta[0:num_epochs]
 
         for epoch in range(start_epoch, start_epoch + num_epochs):
             start = time.time()
