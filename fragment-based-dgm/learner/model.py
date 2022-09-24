@@ -26,33 +26,32 @@ class Encoder(nn.Module):
             dropout=dropout,
             batch_first=True)
 
-        self.rnn2mean = nn.Sequential(
-            nn.Linear(self.embed_size, 1000),
-            nn.ReLU(),
-            #nn.Dropout(0.2),
-            nn.Linear(1000, 500),
-            nn.ReLU(),
-            #nn.Dropout(0.2),
-            nn.Linear(500, self.latent_size)
-            #nn.Sigmoid()
-        )
-        #nn.Linear(
-        #    in_features=self.embed_size,
-        #    out_features=self.latent_size)
-
-        self.rnn2logv = nn.Sequential(
-            nn.Linear(self.embed_size, 1000),
-            nn.ReLU(),
-            #nn.Dropout(0.2),
-            nn.Linear(1000, 500),
-            nn.ReLU(),
-            #nn.Dropout(0.2),
-            nn.Linear(500, self.latent_size)
-            #nn.Sigmoid()
-        )
-        #nn.Linear(
-        #    in_features=self.embed_size,
-        #    out_features=self.latent_size)
+        self.rnn2mean = nn.Linear(
+            in_features=self.embed_size,
+            out_features=self.latent_size)
+        #nn.Sequential(
+        #    nn.Linear(self.embed_size, 1000),
+        #    nn.ReLU(),
+        #    # nn.Dropout(0.2),
+        #    nn.Linear(1000, 500),
+        #    nn.ReLU(),
+        #    # nn.Dropout(0.2),
+        #    nn.Linear(500, self.latent_size)
+        #    # nn.Sigmoid()
+        #)
+        self.rnn2logv = nn.Linear(
+            in_features=self.embed_size,
+            out_features=self.latent_size)
+        #nn.Sequential(
+        #    nn.Linear(self.embed_size, 1000),
+        #    nn.ReLU(),
+        #    #nn.Dropout(0.2),
+        #    nn.Linear(1000, 500),
+        #    nn.ReLU(),
+        #    #nn.Dropout(0.2),
+        #    nn.Linear(500, self.latent_size)
+        #    #nn.Sigmoid()
+        #)
 
     def forward(self, vec_frag_arr):
         batch_size = vec_frag_arr.size(0)
@@ -98,10 +97,10 @@ class MLP(nn.Module):
             nn.Sigmoid()
         )
         self.layers_logp = nn.Sequential(
-            nn.Linear(latent_size, 64),
+            nn.Linear(latent_size, 200),
             nn.ReLU(),
             #nn.Dropout(0.2),
-            nn.Linear(64, 32),
+            nn.Linear(200, 64),
             nn.ReLU(),
             #nn.Dropout(0.2),
             nn.Linear(32, 1)
@@ -210,7 +209,7 @@ class Frag2Mol(nn.Module):
         #print(inputs)
         vec_frag_arr = torch.zeros(100)
         for idx2, (tgt_i) in enumerate(inputs):
-            vec_frag_sum = torch.mean(self.embedder(tgt_i[tgt_i > 2]), 0)
+            vec_frag_sum = torch.sum(self.embedder(tgt_i[tgt_i > 2]), 0)/1000
             if idx2 == 0:
                 vec_frag_arr = vec_frag_sum
             else:
