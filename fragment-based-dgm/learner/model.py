@@ -27,28 +27,24 @@ class Encoder(nn.Module):
             batch_first=True)
 
         self.rnn2mean = nn.Sequential(
-            nn.Linear(self.embed_size, 1000),
-        #    nn.ReLU(),
-            # nn.Dropout(0.2),
-            nn.Linear(1000, 500),
+            nn.Linear(self.embed_size, 200),
+            nn.ReLU(),
+            nn.Linear(200, self.latent_size)
+        )
+        #    # nn.Dropout(0.2),
         #    nn.ReLU(),
         #    # nn.Dropout(0.2),
-            nn.Linear(500, self.latent_size)
+        #    nn.Linear(500, self.latent_size)
         #    # nn.Sigmoid()
-        )
+        #)
         # nn.Linear(
         #    in_features=self.embed_size,
         #    out_features=self.latent_size)
 
-        self.rnn2logv = nn.Sequential(
-            nn.Linear(self.embed_size, 1000),
-        #    nn.ReLU(),
-        #    #nn.Dropout(0.2),
-            nn.Linear(1000, 500),
-        #    nn.ReLU(),
-        #    #nn.Dropout(0.2),
-            nn.Linear(500, self.latent_size)
-        #    #nn.Sigmoid()
+        self.rnn2logv =  nn.Sequential(
+            nn.Linear(self.embed_size, 200),
+            nn.ReLU(),
+            nn.Linear(200, self.latent_size)
         )
         # nn.Linear(
         #    in_features=self.embed_size,
