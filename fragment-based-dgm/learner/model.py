@@ -97,10 +97,10 @@ class MLP(nn.Module):
             nn.Sigmoid()
         )
         self.layers_logp = nn.Sequential(
-            nn.Linear(latent_size, 200),
+            nn.Linear(latent_size, 64),
             nn.ReLU(),
             #nn.Dropout(0.2),
-            nn.Linear(200, 64),
+            nn.Linear(64, 32),
             nn.ReLU(),
             #nn.Dropout(0.2),
             nn.Linear(32, 1)
@@ -209,7 +209,7 @@ class Frag2Mol(nn.Module):
         #print(inputs)
         vec_frag_arr = torch.zeros(100)
         for idx2, (tgt_i) in enumerate(inputs):
-            vec_frag_sum = torch.sum(self.embedder(tgt_i[tgt_i > 2]), 0)/1000
+            vec_frag_sum = F.normalize(torch.sum(self.embedder(tgt_i[tgt_i > 2]), 0))
             if idx2 == 0:
                 vec_frag_arr = vec_frag_sum
             else:
