@@ -129,9 +129,9 @@ class MLP(nn.Module):
         #x = self.linear3(x)
         #y_qed = self.layers_qed(x)
         y_logp = self.layers_logp(x)
-        #y_sas = self.layers_sas(x)
+        y_sas = self.layers_sas(x)
         #return x.view(-1)
-        return y_logp.view(-1).cuda()
+        return y_logp.view(-1).cuda(), y_sas.view(-1).cuda()
 
 class Decoder(nn.Module):
     def __init__(self, embed_size, latent_size, hidden_size,
@@ -229,7 +229,7 @@ class Frag2Mol(nn.Module):
         #pred_1 = self.mlp(Variable(mu_norm[0, :, :]))
         #pred_2 = self.mlp(Variable(mu_norm[1, :, :]))
         #pred = (pred_1 + pred_2)/2
-        pred_logp = self.mlp(Variable(mu))
+        pred_logp, pred_sas = self.mlp(Variable(mu))
         ###
         state = self.latent2rnn(z)
         state = state.view(self.hidden_layers, batch_size, self.hidden_size)
@@ -237,7 +237,7 @@ class Frag2Mol(nn.Module):
         output, state = self.decoder(embeddings2, state, lengths)
         #return output, mu, sigma
         ### Teddy Code
-        return output, mu, sigma, z, pred_logp
+        return output, mu, sigma, z, pred_logp, pred_sas
 
     def load_embeddings(self):
         filename = f'emb_{self.embed_size}.dat'
@@ -304,7 +304,7 @@ class Loss(nn.Module):
         self.loss_fn = nn.MSELoss()
         self.vocab = vocab
 
-    def forward(self, output, target, mu, sigma, pred_logp, labels_logp, epoch, tgt_str_lst, penalty_weights, beta):
+    def forward(self, output, target, mu, sigma, pred_logp, labels_logp, pred_sas, labels_sas, epoch, tgt_str_lst, penalty_weights, beta):
         output = F.log_softmax(output, dim=1)
         #print("molecules logP", labels)
         #print("Original Output Size:", output.size())
@@ -362,9 +362,9 @@ class Loss(nn.Module):
         ### Compute prediction loss
         #pred_qed_loss = F.binary_cross_entropy(pred_qed.type(torch.float64), labels_qed.cuda())
         pred_logp_loss = F.mse_loss(pred_logp.type(torch.float64), labels_logp.cuda())
-        #pred_sas_loss = F.mse_loss(pred_sas.type(torch.float64), labels_sas.cuda())
+        pred_sas_loss = F.mse_loss(pred_sas.type(torch.float64), labels_sas.cuda())
         if KL_loss > 10000000:
-            total_loss = CE_loss + pred_logp_loss
+            total_loss = CE_loss + pred_logp_loss + pred_sas_loss
         else:
-            total_loss = CE_loss + beta[epoch]*KL_loss + pred_logp_loss
-        return total_loss, CE_loss, KL_loss, pred_logp_loss
+            total_loss = CE_loss + beta[epoch]*KL_loss + pred_logp_loss + pred_sas_loss
+        return total_loss, CE_loss, KL_loss, pred_logp_loss, pred_sas_loss
