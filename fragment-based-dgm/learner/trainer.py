@@ -235,9 +235,10 @@ class Trainer:
         total_mutual_info_list = []
         #KL weights anneal
         beta = []
+        beta.extend(list(np.zeros(10)))
         while len(beta) < num_epochs:
-            beta.extend(list(np.zeros(10)))
-            beta.extend(list((np.arange(10) + 1) / 100))
+            beta.extend(list((np.arange(10) + 1) / 10))
+            beta.extend(list(np.ones(10)))
         #beta[-10:] = list(np.zeros(10))
         #beta = beta[0:num_epochs]
 
