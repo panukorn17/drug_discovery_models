@@ -241,6 +241,7 @@ class Trainer:
             beta.extend(list(np.ones(10)))
         #beta[-10:] = list(np.zeros(10))
         #beta = beta[0:num_epochs]
+        print('beta:', beta)
 
         for epoch in range(start_epoch, start_epoch + num_epochs):
             start = time.time()
