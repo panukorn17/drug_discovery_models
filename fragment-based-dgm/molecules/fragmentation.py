@@ -146,18 +146,18 @@ def reconstruct(frags, reverse=False):
 
     try:
         if count_dummies(frags[0]) != 1:
-            #print("yes 1")
+            print("yes 1")
             #print(mol_to_smiles(frags[1]))
             #print(count_dummies(frags[1]))
             return None, None
 
         if count_dummies(frags[-1]) != 1:
-            #print("yes 2")
+            print("yes 2")
             return None, None
 
         for frag in frags[1:-1]:
             if count_dummies(frag) != 2:
-                #print("yes 3")
+                print("yes 3")
                 return None, None
         
         mol = join_molecules(frags[0], frags[1])
