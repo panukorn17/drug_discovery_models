@@ -165,7 +165,7 @@ class Trainer:
             #rint("target string list", tgt_str_lst)
             #labels_qed = torch.tensor(molecules_correct.qed.values)
             labels_logp = torch.tensor(molecules_correct.logP.values)
-            #labels_sas = torch.tensor(molecules_correct.SAS.values)
+            labels_sas = torch.tensor(molecules_correct.SAS.values)
             #print("labels: ", labels)
             #loss, CE_loss, KL_loss, pred_logp_loss, pred_sas_loss = self.criterion(output, tgt, mu, sigma, pred_logp, labels_logp, pred_sas, labels_sas, epoch, tgt_str_lst, penalty_weights, beta)
             loss, CE_loss, KL_loss, pred_logp_loss = self.criterion(output, tgt, mu, sigma, pred_logp, labels_logp, labels_sas, epoch, tgt_str_lst, penalty_weights, beta)
