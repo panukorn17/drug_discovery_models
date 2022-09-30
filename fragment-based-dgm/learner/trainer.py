@@ -188,7 +188,7 @@ class Trainer:
                 print("pred logp", pred_logp, " labels logp: ", labels_logp, "loss logp:", F.mse_loss(pred_logp.type(torch.float64), labels_logp.cuda()))
                 print("pred sas", pred_sas, " labels sas: ", labels_sas, "loss sas:", F.mse_loss(pred_sas.type(torch.float64), labels_sas.cuda()))
                 #print("CE Loss ", CE_loss, " KL Loss: ", KL_loss, "Prediction Loss:", pred_logp_loss + pred_sas_loss)
-                print("CE Loss ", CE_loss, " KL Loss: ", KL_loss, "Prediction Loss:", pred_logp_loss)
+                print("CE Loss ", CE_loss, " KL Loss: ", KL_loss, "Prediction Loss:", pred_logp_loss + pred_sas_loss)
             ###
         return epoch_loss / len(loader)
 
@@ -241,7 +241,7 @@ class Trainer:
         beta.extend(list(np.zeros(10)))
         while len(beta) < num_epochs:
             #beta.extend(list((np.arange(11)) / 10))
-            beta.extend(list(np.ones(10)*0.0001))
+            beta.extend(list(np.ones(10)*0.001))
         #beta[-10:] = list(np.zeros(10))
         beta = beta[0:num_epochs]
         print('beta:', beta)
