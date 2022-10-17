@@ -121,7 +121,7 @@ def join_molecules(molA, molB):
         replacementConnectionPoint=neigh,
         useChirality=False)[0]
 
-    Chem.Kekulize(joined)
+    #Chem.Kekulize(joined)
     return joined
 
 
