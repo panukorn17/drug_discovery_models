@@ -93,7 +93,7 @@ class MLP(nn.Module):
             nn.Linear(latent_size, 200),
             nn.ReLU(),
             #nn.Dropout(0.2),
-            nn.Linear(200, 100),
+            nn.Linear(200, 1),
             nn.ReLU(),
             #nn.Dropout(0.2),
             nn.Sigmoid()
