@@ -90,10 +90,10 @@ class MLP(nn.Module):
         #self.linear3 = nn.Linear(8, 1)
 
         self.layers_qed = nn.Sequential(
-            nn.Linear(latent_size, 200),
+            nn.Linear(latent_size, 64),
             nn.ReLU(),
             #nn.Dropout(0.2),
-            nn.Linear(200, 1),
+            nn.Linear(64, 1),
             nn.ReLU(),
             #nn.Dropout(0.2),
             nn.Sigmoid()
