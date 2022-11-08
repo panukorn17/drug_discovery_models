@@ -150,7 +150,8 @@ class Trainer:
                 tgt = tgt.cuda()
 
             #output, mu, sigma, z, pred_logp, pred_sas = self.model(src, lengths)
-            output, mu, sigma, z, pred_logp = self.model(src, lengths)
+            #output, mu, sigma, z, pred_logp = self.model(src, lengths)
+            output, mu, sigma, z, pred_qed = self.model(src, lengths)
             #mutual_info = self.model.calc_mi(src, lengths)
             #total_mutual_info += mutual_info * src.size(0)
             #print("mu:", mu)
@@ -163,12 +164,13 @@ class Trainer:
             molecules_correct = dataset.data.iloc[data_index_correct]
             #print("molecules: ", molecules_correct)
             #rint("target string list", tgt_str_lst)
-            #labels_qed = torch.tensor(molecules_correct.qed.values)
+            labels_qed = torch.tensor(molecules_correct.qed.values)
             labels_logp = torch.tensor(molecules_correct.logP.values)
             labels_sas = torch.tensor(molecules_correct.SAS.values)
             #print("labels: ", labels)
             #loss, CE_loss, KL_loss, pred_logp_loss, pred_sas_loss = self.criterion(output, tgt, mu, sigma, pred_logp, labels_logp, pred_sas, labels_sas, epoch, tgt_str_lst, penalty_weights, beta)
-            loss, CE_loss, KL_loss, pred_logp_loss = self.criterion(output, tgt, mu, sigma, pred_logp, labels_logp, labels_sas, epoch, tgt_str_lst, penalty_weights, beta)
+            #loss, CE_loss, KL_loss, pred_logp_loss = self.criterion(output, tgt, mu, sigma, pred_logp, labels_logp, labels_sas, epoch, tgt_str_lst, penalty_weights, beta)
+            loss, CE_loss, KL_loss, pred_qed_loss = self.criterion(output, tgt, mu, sigma, pred_qed, labels_qed, labels_logp, labels_sas, epoch, tgt_str_lst, penalty_weights, beta)
             #pred_loss.backward()
             loss.backward()
             clip_grad_norm_(self.model.parameters(),
@@ -184,10 +186,11 @@ class Trainer:
                 print("index:", data_index)
                 print("index correct: ", data_index_correct)
                 print("batch ", idx, " loss: ", epoch_loss/(idx+1))
-                #print("pred qed", pred_qed, " labels qed: ", labels_qed, "loss qed:", F.binary_cross_entropy(pred_qed.type(torch.float64), labels_qed.cuda()))
-                print("pred logp", pred_logp, " labels logp: ", labels_logp, "loss logp:", F.mse_loss(pred_logp.type(torch.float64), labels_logp.cuda()))
+                print("pred qed", pred_qed, " labels qed: ", labels_qed, "loss qed:", F.binary_cross_entropy(pred_qed.type(torch.float64), labels_qed.cuda()))
+                #print("pred logp", pred_logp, " labels logp: ", labels_logp, "loss logp:", F.mse_loss(pred_logp.type(torch.float64), labels_logp.cuda()))
                 #print("pred sas", pred_sas, " labels sas: ", labels_sas, "loss sas:", F.mse_loss(pred_sas.type(torch.float64), labels_sas.cuda()))
-                print("CE Loss ", CE_loss, " KL Loss: ", KL_loss, "Prediction Loss:", pred_logp_loss)
+                print("CE Loss ", CE_loss, " KL Loss: ", KL_loss, "Prediction Loss:", pred_qed_loss)
+                #print("CE Loss ", CE_loss, " KL Loss: ", KL_loss, "Prediction Loss:", pred_logp_loss)
                 #print("CE Loss ", CE_loss, " KL Loss: ", KL_loss, "Prediction Loss:", pred_logp_loss + pred_sas_loss)
             ###
         return epoch_loss / len(loader)
@@ -241,7 +244,7 @@ class Trainer:
         beta.extend(list(np.zeros(10)))
         while len(beta) < num_epochs:
             #beta.extend(list((np.arange(11)) / 10))
-            beta.extend(list(np.ones(10)*0.000001))
+            beta.extend(list(np.ones(10)*0.001))
         #beta[-10:] = list(np.zeros(10))
         beta = beta[0:num_epochs]
         print('beta:', beta)
