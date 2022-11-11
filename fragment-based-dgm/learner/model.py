@@ -340,6 +340,7 @@ class Loss(nn.Module):
         #print("Flattened translated Target Size:", target.size())
         #print("Flattened translated Target sample:", target)
         output = output.view(-1, output.size(2))
+        print("output:", output)
         #print("Flattened Output Size:", output.size())
         #print("Flattened Output sample:", output)
 
@@ -353,7 +354,8 @@ class Loss(nn.Module):
         # pick the values for the label and zero out the rest with the mask
         #output = output[range(output.size(0)), target] * target_pen_weight.cuda() * mask
         output = output[range(output.size(0)), target] * mask
-        #print(output)
+        print("output zero out:", output)
+        print("target",target)
 
         # compute cross entropy loss which ignores all <PAD> tokens
         CE_loss = -torch.sum(output) / nb_tokens
