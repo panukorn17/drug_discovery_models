@@ -310,7 +310,7 @@ class Loss(nn.Module):
     def forward(self, output, target, mu, sigma, pred_logp, labels_logp, labels_sas, epoch, tgt_str_lst,penalty_weights, beta):
         #def forward(self, output, target, mu, sigma, pred_logp, labels_logp, pred_sas, labels_sas, epoch, tgt_str_lst,penalty_weights, beta):
         output = F.log_softmax(output, dim=1)
-        output_mse = F.softmax(output, dim=1)
+        #output_mse = F.softmax(output, dim=1)
         #print("molecules logP", labels)
         #print("Original Output Size:", output.size())
         #print("Original Output Sample:", output)
@@ -341,7 +341,7 @@ class Loss(nn.Module):
         #print("Flattened translated Target Size:", target.size())
         #print("Flattened translated Target sample:", target)
         output = output.view(-1, output.size(2))
-        output_mse = output_mse.view(-1, output_mse.size(2))
+        #output_mse = output_mse.view(-1, output_mse.size(2))
         #print("Flattened Output Size:", output.size())
         #print("Flattened Output sample:", output)
 
@@ -355,10 +355,10 @@ class Loss(nn.Module):
         # pick the values for the label and zero out the rest with the mask
         #output = output[range(output.size(0)), target] * target_pen_weight.cuda() * mask
         output = output[range(output.size(0)), target] * mask
-        output_mse = output_mse[range(output_mse.size(0)), target] * mask
-        print("output -log:", output)
-        print("output probaility:", output_mse)
-        print("target",target)
+        #output_mse = output_mse[range(output_mse.size(0)), target] * mask
+        #print("output -log:", output)
+        #print("output probaility:", output_mse)
+        #print("target",target)
 
         # compute cross entropy loss which ignores all <PAD> tokens
         CE_loss = -torch.sum(output) / nb_tokens
@@ -374,10 +374,10 @@ class Loss(nn.Module):
         #pred_sas_loss = F.mse_loss(pred_sas.type(torch.float64), labels_sas.cuda())
         if KL_loss > 10000000:
             #total_loss = CE_loss + pred_logp_loss + pred_sas_loss
-            total_loss = CE_loss + pred_logp_loss
+            total_loss = CE_loss * 10 + pred_logp_loss
         else:
             #total_loss = CE_loss + beta[epoch]*KL_loss + pred_logp_loss + pred_sas_loss
             #total_loss = CE_loss + pred_logp_loss + pred_sas_loss
-            total_loss = CE_loss + beta[epoch]*KL_loss + pred_logp_loss
+            total_loss = CE_loss * 10 + beta[epoch]*KL_loss + pred_logp_loss
         #return total_loss, CE_loss, KL_loss, pred_logp_loss, pred_sas_loss
         return total_loss, CE_loss, KL_loss, pred_logp_loss
