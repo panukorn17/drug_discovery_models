@@ -361,7 +361,10 @@ class Loss(nn.Module):
         #print("target",target)
 
         # compute cross entropy loss which ignores all <PAD> tokens
-        CE_loss = -torch.sum(output) / nb_tokens
+        #CE_loss = -torch.sum(output) / nb_tokens
+
+        #try mse ***Teddy***
+        CE_loss = F.mse_loss(output, torch.ones(len(output)).cuda())
 
         # compute KL Divergence
         KL_loss = -0.5 * torch.sum(1 + sigma - mu.pow(2) - sigma.exp())
@@ -374,10 +377,10 @@ class Loss(nn.Module):
         #pred_sas_loss = F.mse_loss(pred_sas.type(torch.float64), labels_sas.cuda())
         if KL_loss > 10000000:
             #total_loss = CE_loss + pred_logp_loss + pred_sas_loss
-            total_loss = CE_loss * 10 + pred_logp_loss
+            total_loss = CE_loss + pred_logp_loss
         else:
             #total_loss = CE_loss + beta[epoch]*KL_loss + pred_logp_loss + pred_sas_loss
             #total_loss = CE_loss + pred_logp_loss + pred_sas_loss
-            total_loss = CE_loss * 10 + beta[epoch]*KL_loss + pred_logp_loss
+            total_loss = CE_loss + beta[epoch]*KL_loss + pred_logp_loss
         #return total_loss, CE_loss, KL_loss, pred_logp_loss, pred_sas_loss
         return total_loss, CE_loss, KL_loss, pred_logp_loss
