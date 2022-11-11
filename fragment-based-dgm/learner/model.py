@@ -353,18 +353,19 @@ class Loss(nn.Module):
         nb_tokens = int(torch.sum(mask).item())
 
         # pick the values for the label and zero out the rest with the mask
-        #output = output[range(output.size(0)), target] * target_pen_weight.cuda() * mask
-        output = output[range(output.size(0)), target] * mask
+        output = output[range(output.size(0)), target] * target_pen_weight.cuda() * mask
+        #output = output[range(output.size(0)), target] * mask
+
         #output_mse = output_mse[range(output_mse.size(0)), target] * mask
         #print("output -log:", output)
         #print("output probaility:", output_mse)
         #print("target",target)
 
         # compute cross entropy loss which ignores all <PAD> tokens
-        #CE_loss = -torch.sum(output) / nb_tokens
+        CE_loss = -torch.sum(output) / nb_tokens
 
         #try mse ***Teddy***
-        CE_loss = F.mse_loss(output, torch.zeros(len(output)).cuda())
+        #CE_loss = F.mse_loss(output, torch.zeros(len(output)).cuda())
 
         # compute KL Divergence
         KL_loss = -0.5 * torch.sum(1 + sigma - mu.pow(2) - sigma.exp())
