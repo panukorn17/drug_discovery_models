@@ -364,7 +364,7 @@ class Loss(nn.Module):
         #CE_loss = -torch.sum(output) / nb_tokens
 
         #try mse ***Teddy***
-        CE_loss = F.mse_loss(output, torch.ones(len(output)).cuda())
+        CE_loss = F.mse_loss(output, torch.zeros(len(output)).cuda())
 
         # compute KL Divergence
         KL_loss = -0.5 * torch.sum(1 + sigma - mu.pow(2) - sigma.exp())
