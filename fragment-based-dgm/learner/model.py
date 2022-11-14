@@ -353,8 +353,8 @@ class Loss(nn.Module):
         nb_tokens = int(torch.sum(mask).item())
 
         # pick the values for the label and zero out the rest with the mask
-        output = output[range(output.size(0)), target] * target_pen_weight.cuda() * mask
-        #output = output[range(output.size(0)), target] * mask
+        #output = output[range(output.size(0)), target] * target_pen_weight.cuda() * mask
+        output = output[range(output.size(0)), target] * mask
 
         #output_mse = output_mse[range(output_mse.size(0)), target] * mask
         #print("output -log:", output)
@@ -378,10 +378,12 @@ class Loss(nn.Module):
         #pred_sas_loss = F.mse_loss(pred_sas.type(torch.float64), labels_sas.cuda())
         if KL_loss > 10000000:
             #total_loss = CE_loss + pred_logp_loss + pred_sas_loss
-            total_loss = CE_loss + pred_logp_loss
+            #total_loss = CE_loss + pred_logp_loss
+            total_loss = CE_loss
         else:
             #total_loss = CE_loss + beta[epoch]*KL_loss + pred_logp_loss + pred_sas_loss
             #total_loss = CE_loss + pred_logp_loss + pred_sas_loss
-            total_loss = CE_loss + beta[epoch]*KL_loss + pred_logp_loss
+            #total_loss = CE_loss + pred_logp_loss
+            total_loss = CE_loss
         #return total_loss, CE_loss, KL_loss, pred_logp_loss, pred_sas_loss
         return total_loss, CE_loss, KL_loss, pred_logp_loss
