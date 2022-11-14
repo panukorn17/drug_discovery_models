@@ -363,7 +363,7 @@ class Loss(nn.Module):
 
         # compute cross entropy loss which ignores all <PAD> tokens
         #CE_loss = -torch.sum(output) / nb_tokens
-        CE_loss = -torch.sum(output) / nb_tokens
+        CE_loss = -torch.sum(output)
 
         #try mse ***Teddy***
         #CE_loss = F.mse_loss(output, torch.zeros(len(output)).cuda())
