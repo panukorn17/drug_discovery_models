@@ -309,7 +309,7 @@ class Loss(nn.Module):
 
     def forward(self, output, target, mu, sigma, pred_logp, labels_logp, labels_sas, epoch, tgt_str_lst,penalty_weights, beta):
         #def forward(self, output, target, mu, sigma, pred_logp, labels_logp, pred_sas, labels_sas, epoch, tgt_str_lst,penalty_weights, beta):
-        output = F.log_softmax(output, dim=2)
+        output = F.log_softmax(output, dim=1)
         #output_mse = F.softmax(output, dim=1)
         #print("molecules logP", labels)
         #print("Original Output Size:", output.size())
