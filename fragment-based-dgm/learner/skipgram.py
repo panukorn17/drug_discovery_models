@@ -180,7 +180,7 @@ def train_embeddings(config, data):
         data = [s.split(" ") for s in data.fragments]
 
     #data = [item for sublist in data for item in sublist]
-    fragment_unique = list(set(data))
+    #fragment_unique = list(set(data))
     w2i = {PAD_TOKEN: 0, SOS_TOKEN: 1, EOS_TOKEN: 2}
 
     w2v = Word2Vec(
