@@ -194,7 +194,7 @@ def train_embeddings(config, data):
             sg=1)
 
     vocab = w2v.wv.vocab.keys()
-    w2i.update({k: v + start_idx for k, v in enumerate(vocab)})
+    w2i.update({k: v + start_idx for v, k in enumerate(vocab)})
     i2w = {v: k for (k, v) in w2i.items()}
 
     ##Teddy Code
