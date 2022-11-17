@@ -185,7 +185,7 @@ def train_embeddings(config, data):
 
     w2v = Word2Vec(
             data,
-            vector_size=embed_size,
+            size=embed_size,
             window=embed_window,
             min_count=1,
             negative=5,
@@ -193,8 +193,8 @@ def train_embeddings(config, data):
             epochs=150,
             sg=1)
 
-    vocab = w2v.wv.key_to_index
-    w2i.update({k: v + start_idx for (k, v) in vocab.items()})
+    vocab = w2v.wv.vocab.keys()
+    w2i.update({k: v + start_idx for k, v in enumerate(vocab)})
     i2w = {v: k for (k, v) in w2i.items()}
 
     ##Teddy Code
