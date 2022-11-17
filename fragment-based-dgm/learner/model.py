@@ -27,7 +27,7 @@ class Encoder(nn.Module):
             batch_first=True)
 
         self.rnn2mean = nn.Linear(
-            in_features=self.embed_size,
+            in_features=self.embed_size * self.hidden_layers,
             out_features=self.latent_size)
         #nn.Sequential(
         #    nn.Linear(self.embed_size, 64),
@@ -43,7 +43,7 @@ class Encoder(nn.Module):
 
 
         self.rnn2logv =  nn.Linear(
-            in_features=self.embed_size,
+            in_features=self.embed_size * self.hidden_layers,
             out_features=self.latent_size)
         #nn.Sequential(
         #    nn.Linear(self.embed_size, 64),
@@ -55,14 +55,14 @@ class Encoder(nn.Module):
         #    out_features=self.latent_size)
 
 
-    def forward(self, vec_frag_arr):
-        batch_size = vec_frag_arr.size(0)
-        #state = self.init_state(dim=batch_size)
-        #packed = pack_padded_sequence(embeddings, lengths, batch_first=True, enforce_sorted=False)
-        #_, state = self.rnn(packed, state)
-        #state = state.view(batch_size, self.hidden_size * self.hidden_layers)
-        mean = self.rnn2mean(vec_frag_arr)
-        logv = self.rnn2logv(vec_frag_arr)
+    def forward(self, inputs, embeddings, lengths):
+        batch_size = inputs.size(0)
+        state = self.init_state(dim=batch_size)
+        packed = pack_padded_sequence(embeddings, lengths, batch_first=True, enforce_sorted=False)
+        _, state = self.rnn(packed, state)
+        state = state.view(batch_size, self.hidden_size * self.hidden_layers)
+        mean = self.rnn2mean(state)
+        logv = self.rnn2logv(state)
         std = torch.exp(0.5 * logv)
         z = self.sample_normal(dim=batch_size)
         latent_sample = z * std + mean
@@ -210,21 +210,22 @@ class Frag2Mol(nn.Module):
     def forward(self, inputs, lengths):
         batch_size = inputs.size(0)
         #print(inputs)
-        vec_frag_arr = torch.zeros(100)
-        for idx2, (tgt_i) in enumerate(inputs):
-            vec_frag_sum = torch.sum(self.embedder(tgt_i[tgt_i > 2]), 0)
-            if idx2 == 0:
-                vec_frag_arr = vec_frag_sum
-            else:
-                vec_frag_arr = torch.vstack((vec_frag_arr, vec_frag_sum))
+        #vec_frag_arr = torch.zeros(100)
+        #for idx2, (tgt_i) in enumerate(inputs):
+        #    vec_frag_sum = torch.sum(self.embedder(tgt_i[tgt_i > 2]), 0)
+        #    if idx2 == 0:
+        #        vec_frag_arr = vec_frag_sum
+        #    else:
+        #        vec_frag_arr = torch.vstack((vec_frag_arr, vec_frag_sum))
         embeddings = self.embedder(inputs)
         #print(vec_frag_arr)
         #print(vec_frag_arr.size())
-        #embeddings1 = F.dropout(embeddings, p=self.dropout, training=self.training)
+        embeddings1 = F.dropout(embeddings, p=self.dropout, training=self.training)
         #vec_frag_sum = np.sum(embeddings, 0)
         #print(vec_frag_sum)
         #print(vec_frag_sum.shape())
-        z, mu, sigma = self.encoder(vec_frag_arr)
+        #z, mu, sigma = self.encoder(vec_frag_arr)
+        z, mu, sigma = self.encoder(inputs, embeddings1, lengths)
         ### Add Property Predictor
         #mu_norm = F.normalize(mu)
         #pred_1 = self.mlp(Variable(mu_norm[0, :, :]))
