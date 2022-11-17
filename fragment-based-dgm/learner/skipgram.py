@@ -190,7 +190,7 @@ def train_embeddings(config, data):
             min_count=1,
             negative=5,
             workers=20,
-            epochs=150,
+            iter=10,
             sg=1)
 
     vocab = w2v.wv.vocab.keys()
