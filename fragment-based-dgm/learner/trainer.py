@@ -73,8 +73,12 @@ def get_scheduler(config, optimizer):
 
 
 def dump(config, losses, CE_loss, KL_loss, pred_sas_loss, pred_logP_loss, beta_list, scores):
-    df = pd.DataFrame(losses, CE_loss, KL_loss, pred_sas_loss, pred_logP_loss, beta_list,
-                      columns=["Total loss", "CE loss", "KL loss", "pred sas loss", "pred logP loss", "beta"])
+    df = pd.DataFrame({"Total loss": losses,
+                       "CE loss": CE_loss,
+                       "KL loss": KL_loss,
+                       "pred sas loss": pred_sas_loss,
+                       "pred logP loss": pred_logP_loss,
+                      "beta": beta_list})
     filename = config.path('performance') / "loss.csv"
     df.to_csv(filename)
 
