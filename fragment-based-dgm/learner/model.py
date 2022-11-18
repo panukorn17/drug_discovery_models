@@ -387,4 +387,4 @@ class Loss(nn.Module):
             #total_loss = CE_loss + pred_logp_loss
             #total_loss = CE_loss
         #return total_loss, CE_loss, KL_loss, pred_logp_loss
-        return total_loss, CE_loss, KL_loss, pred_logp_loss, pred_sas_loss
+        return total_loss, CE_loss, KL_loss, pred_sas_loss, pred_logp_loss

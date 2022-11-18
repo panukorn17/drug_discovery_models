@@ -131,6 +131,10 @@ class Trainer:
         ###
         self.model.train()
         epoch_loss = 0
+        epoch_CE_loss = 0
+        epoch_KL_loss = 0
+        epoch_pred_sas_loss = 0
+        epoch_pred_logP_loss = 0
 
         if epoch > 0 and self.config.get('use_scheduler'):
             self.scheduler.step()
@@ -173,7 +177,7 @@ class Trainer:
             labels_logp = torch.tensor(molecules_correct.logP.values)
             labels_sas = torch.tensor(molecules_correct.SAS.values)
             #print("labels: ", labels)
-            loss, CE_loss, KL_loss, pred_logp_loss, pred_sas_loss = self.criterion(output, tgt, mu, sigma, pred_logp, labels_logp, pred_sas, labels_sas, epoch, tgt_str_lst, penalty_weights, beta)
+            loss, CE_loss, KL_loss, pred_sas_loss, pred_logp_loss = self.criterion(output, tgt, mu, sigma, pred_logp, labels_logp, pred_sas, labels_sas, epoch, tgt_str_lst, penalty_weights, beta)
             #loss, CE_loss, KL_loss, pred_logp_loss = self.criterion(output, tgt, mu, sigma, pred_logp, labels_logp, labels_sas, epoch, tgt_str_lst, penalty_weights, beta)
             #pred_loss.backward()
             loss.backward()
@@ -181,6 +185,10 @@ class Trainer:
                             self.config.get('clip_norm'))
 
             epoch_loss += loss.item()
+            epoch_CE_loss += CE_loss.item()
+            epoch_KL_loss += KL_loss.item()
+            epoch_pred_sas_loss += pred_logp_loss.item()
+            epoch_pred_logP_loss += pred_sas_loss.item()
             #epoch_loss += pred_loss.item()
 
             self.optimizer.step()
@@ -196,7 +204,7 @@ class Trainer:
                 #print("CE Loss ", CE_loss, " KL Loss: ", KL_loss, "Prediction Loss:", pred_logp_loss)
                 print("CE Loss ", CE_loss, " KL Loss: ", KL_loss, "Prediction Loss:", pred_logp_loss + pred_sas_loss)
             ###
-        return epoch_loss / len(loader), CE_loss / len(loader), KL_loss / len(loader), pred_logp_loss / len(loader), pred_sas_loss / len(loader)
+        return epoch_loss / len(loader), epoch_CE_loss / len(loader), epoch_KL_loss / len(loader), epoch_pred_sas_loss / len(loader), epoch_pred_logP_loss / len(loader)
 
     def _valid_epoch(self, epoch, loader):
         use_gpu = self.config.get('use_gpu')
