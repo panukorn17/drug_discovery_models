@@ -196,7 +196,7 @@ class Trainer:
                 #print("CE Loss ", CE_loss, " KL Loss: ", KL_loss, "Prediction Loss:", pred_logp_loss)
                 print("CE Loss ", CE_loss, " KL Loss: ", KL_loss, "Prediction Loss:", pred_logp_loss + pred_sas_loss)
             ###
-        return epoch_loss / len(loader), CE_loss / len(loader), KL_loss / len(loader), pred_logp / len(loader), pred_sas / len(loader)
+        return epoch_loss / len(loader), CE_loss / len(loader), KL_loss / len(loader), pred_logp_loss / len(loader), pred_sas_loss / len(loader)
 
     def _valid_epoch(self, epoch, loader):
         use_gpu = self.config.get('use_gpu')
@@ -263,10 +263,10 @@ class Trainer:
             epoch_loss, CE_epoch_loss, KL_epoch_loss, sas_epoch_loss, logP_epoch_loss = self._train_epoch(epoch, loader, penalty_weights, beta)
             #self.mutual_information.append(total_mutual_info)
             self.losses.append(epoch_loss)
-            self.CE_loss.append(CE_epoch_loss)
-            self.KL_loss.append(KL_epoch_loss)
-            self.pred_sas_loss.append(sas_epoch_loss)
-            self.pred_logP_loss.append(logP_epoch_loss)
+            self.CE_loss.append(CE_epoch_loss.item())
+            self.KL_loss.append(KL_epoch_loss.item())
+            self.pred_sas_loss.append(sas_epoch_loss.item())
+            self.pred_logP_loss.append(logP_epoch_loss.item())
             #print("epoch: "+str(epoch)+", mutual_information: "+str(total_mutual_info))
             logger.log('loss', epoch_loss, epoch)
             save_ckpt(self, epoch, filename="last.pt")
