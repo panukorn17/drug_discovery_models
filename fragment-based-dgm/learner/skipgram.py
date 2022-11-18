@@ -179,43 +179,43 @@ def train_embeddings(config, data):
     else:
         data = [s.split(" ") for s in data.fragments]
 
-    #data = [item for sublist in data for item in sublist]
-    #fragment_unique = list(set(data))
+    data = [item for sublist in data for item in sublist]
+    fragment_unique = list(set(data))
     w2i = {PAD_TOKEN: 0, SOS_TOKEN: 1, EOS_TOKEN: 2}
 
-    w2v = Word2Vec(
-            data,
-            size=embed_size,
-            window=embed_window,
-            min_count=1,
-            negative=5,
-            workers=20,
-            iter=10,
-            sg=1)
+    #w2v = Word2Vec(
+    #        data,
+    #        size=embed_size,
+    #        window=embed_window,
+    #        min_count=1,
+    #        negative=5,
+    #        workers=20,
+    #        iter=10,
+    #        sg=1)
 
-    vocab = w2v.wv.vocab.keys()
-    w2i.update({k: v + start_idx for v, k in enumerate(vocab)})
-    i2w = {v: k for (k, v) in w2i.items()}
+    #vocab = w2v.wv.vocab.keys()
+    #w2i.update({k: v + start_idx for v, k in enumerate(vocab)})
+    #i2w = {v: k for (k, v) in w2i.items()}
 
     ##Teddy Code
-    #w2i.update({k: v + start_idx for v, (k) in enumerate(fragment_unique)})
-    #i2w = {v: k for (k, v) in w2i.items()}
-    #fragment_unique_mol = mols_from_smiles(fragment_unique)
-    #fragment_unique_mol_df = pd.DataFrame(fragment_unique_mol, columns=['mol'])
+    w2i.update({k: v + start_idx for v, (k) in enumerate(fragment_unique)})
+    i2w = {v: k for (k, v) in w2i.items()}
+    fragment_unique_mol = mols_from_smiles(fragment_unique)
+    fragment_unique_mol_df = pd.DataFrame(fragment_unique_mol, columns=['mol'])
     # Constructing sentences
-    #fragment_unique_mol_df['sentence'] = fragment_unique_mol_df.apply(
-    #    lambda x: MolSentence(mol2alt_sentence(x['mol'], 1)), axis=1)
+    fragment_unique_mol_df['sentence'] = fragment_unique_mol_df.apply(
+        lambda x: MolSentence(mol2alt_sentence(x['mol'], 1)), axis=1)
 
     # Extracting embeddings to a numpy.array
     # Note that we always should mark unseen='UNK' in sentence2vec() so that model is taught how to handle unknown substructures
-    #fragment_unique_mol_df['mol2vec'] = [DfVec(x) for x in
-    #                                     sentences2vec(fragment_unique_mol_df['sentence'], model, unseen='UNK')]
-    #X = np.array([x.vec for x in fragment_unique_mol_df['mol2vec']])
+    fragment_unique_mol_df['mol2vec'] = [DfVec(x) for x in
+                                         sentences2vec(fragment_unique_mol_df['sentence'], model, unseen='UNK')]
+    X = np.array([x.vec for x in fragment_unique_mol_df['mol2vec']])
 
 
     tokens = np.random.uniform(-0.05, 0.05, size=(start_idx, 100))
-    #embeddings = np.vstack([tokens, X])
-    embeddings = np.vstack([tokens, w2v.wv[vocab]])
+    embeddings = np.vstack([tokens, X])
+    #embeddings = np.vstack([tokens, w2v.wv[vocab]])
     path = config.path('config') / f'emb_{embed_size}.dat'
     np.savetxt(path, embeddings, delimiter=",")
 

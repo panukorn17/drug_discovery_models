@@ -72,8 +72,9 @@ def get_scheduler(config, optimizer):
                   gamma=config.get('sched_gamma'))
 
 
-def dump(config, losses, scores):
-    df = pd.DataFrame(losses, columns=["loss"])
+def dump(config, losses, CE_loss, KL_loss, pred_sas_loss, pred_logP_loss, beta_list, scores):
+    df = pd.DataFrame(losses, CE_loss, KL_loss, pred_sas_loss, pred_logP_loss, beta_list,
+                      columns=["Total loss", "CE loss", "KL loss", "pred sas loss", "pred logP loss", "beta"])
     filename = config.path('performance') / "loss.csv"
     df.to_csv(filename)
 
@@ -114,6 +115,11 @@ class Trainer:
             self.model = self.model.cuda()
 
         self.losses = []
+        self.CE_loss = []
+        self.KL_loss = []
+        self.pred_logP_loss = []
+        self.pred_sas_loss = []
+        self.beta_list = []
         self.mutual_information = []
         self.best_loss = np.float('inf')
         self.scores = []
@@ -190,7 +196,7 @@ class Trainer:
                 #print("CE Loss ", CE_loss, " KL Loss: ", KL_loss, "Prediction Loss:", pred_logp_loss)
                 print("CE Loss ", CE_loss, " KL Loss: ", KL_loss, "Prediction Loss:", pred_logp_loss + pred_sas_loss)
             ###
-        return epoch_loss / len(loader)
+        return epoch_loss / len(loader), CE_loss / len(loader), KL_loss / len(loader), pred_logp / len(loader), pred_sas / len(loader)
 
     def _valid_epoch(self, epoch, loader):
         use_gpu = self.config.get('use_gpu')
@@ -245,6 +251,7 @@ class Trainer:
         #beta[-10:] = list(np.zeros(10))
         beta = beta[0:num_epochs]
         print('beta:', beta)
+        self.beta_list = beta
 
         for epoch in range(start_epoch, start_epoch + num_epochs):
             start = time.time()
@@ -253,9 +260,13 @@ class Trainer:
             #mu_stack = self._train_epoch(epoch, loader)
             #return mu_stack
             ###
-            epoch_loss = self._train_epoch(epoch, loader, penalty_weights, beta)
+            epoch_loss, CE_epoch_loss, KL_epoch_loss, sas_epoch_loss, logP_epoch_loss = self._train_epoch(epoch, loader, penalty_weights, beta)
             #self.mutual_information.append(total_mutual_info)
             self.losses.append(epoch_loss)
+            self.CE_loss.append(CE_epoch_loss)
+            self.KL_loss.append(KL_epoch_loss)
+            self.pred_sas_loss.append(sas_epoch_loss)
+            self.pred_logP_loss.append(logP_epoch_loss)
             #print("epoch: "+str(epoch)+", mutual_information: "+str(total_mutual_info))
             logger.log('loss', epoch_loss, epoch)
             save_ckpt(self, epoch, filename="last.pt")
@@ -280,4 +291,4 @@ class Trainer:
 
             self.log_epoch(start, epoch, epoch_loss, epoch_scores)
 
-        dump(self.config, self.losses, self.scores)
+        dump(self.config, self.losses, self.CE_loss, self.KL_loss, self.pred_sas_loss, self.pred_logP_loss, self.beta_list, self.scores)
