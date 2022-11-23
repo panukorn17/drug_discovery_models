@@ -72,8 +72,8 @@ def get_scheduler(config, optimizer):
                   gamma=config.get('sched_gamma'))
 
 
-def dump(config, losses, CE_loss, KL_loss, pred_logP_loss, beta_list, scores):
-    #def dump(config, losses, CE_loss, KL_loss, pred_sas_loss, pred_logP_loss, beta_list, scores):
+def dump(config, losses, CE_loss, KL_loss, pred_sas_loss, pred_logP_loss, beta_list, scores):
+    #def dump(config, losses, CE_loss, KL_loss, pred_logP_loss, beta_list, scores):
     df = pd.DataFrame(list(zip(losses, CE_loss, KL_loss, pred_sas_loss, pred_logP_loss, beta_list)),
                       columns=["Total loss", "CE loss", "KL loss", "pred sas loss", "pred logP loss", "beta"])
     #df = pd.DataFrame(list(zip(losses, CE_loss, KL_loss, pred_logP_loss, beta_list)),
@@ -259,7 +259,7 @@ class Trainer:
         beta.extend(list(np.zeros(10)))
         while len(beta) < num_epochs:
             #beta.extend(list((np.arange(11)) / 10))
-            beta.extend(list(np.ones(10)*0.001))
+            beta.extend(list(np.ones(10)*0.0001))
         #beta[-10:] = list(np.zeros(10))
         beta = beta[0:num_epochs]
         print('beta:', beta)
