@@ -72,9 +72,12 @@ def get_scheduler(config, optimizer):
                   gamma=config.get('sched_gamma'))
 
 
-def dump(config, losses, CE_loss, KL_loss, pred_sas_loss, pred_logP_loss, beta_list, scores):
+def dump(config, losses, CE_loss, KL_loss, pred_logP_loss, beta_list, scores):
+    #def dump(config, losses, CE_loss, KL_loss, pred_sas_loss, pred_logP_loss, beta_list, scores):
     df = pd.DataFrame(list(zip(losses, CE_loss, KL_loss, pred_sas_loss, pred_logP_loss, beta_list)),
                       columns=["Total loss", "CE loss", "KL loss", "pred sas loss", "pred logP loss", "beta"])
+    #df = pd.DataFrame(list(zip(losses, CE_loss, KL_loss, pred_logP_loss, beta_list)),
+    #                  columns=["Total loss", "CE loss", "KL loss", "pred logP loss", "beta"])
     filename = config.path('performance') / "loss.csv"
     df.to_csv(filename)
 
@@ -187,8 +190,8 @@ class Trainer:
             epoch_loss += loss.item()
             epoch_CE_loss += CE_loss.item()
             epoch_KL_loss += KL_loss.item()
-            epoch_pred_sas_loss += pred_logp_loss.item()
-            epoch_pred_logP_loss += pred_sas_loss.item()
+            epoch_pred_sas_loss += pred_sas_loss.item()
+            epoch_pred_logP_loss += pred_logp_loss.item()
             #epoch_loss += pred_loss.item()
 
             self.optimizer.step()
@@ -204,6 +207,7 @@ class Trainer:
                 #print("CE Loss ", CE_loss, " KL Loss: ", KL_loss, "Prediction Loss:", pred_logp_loss)
                 print("CE Loss ", CE_loss, " KL Loss: ", KL_loss, "Prediction Loss:", pred_logp_loss + pred_sas_loss)
             ###
+        #return epoch_loss / len(loader), epoch_CE_loss / len(loader), epoch_KL_loss / len(loader), epoch_pred_logP_loss / len(loader)
         return epoch_loss / len(loader), epoch_CE_loss / len(loader), epoch_KL_loss / len(loader), epoch_pred_sas_loss / len(loader), epoch_pred_logP_loss / len(loader)
 
     def _valid_epoch(self, epoch, loader):
@@ -269,6 +273,7 @@ class Trainer:
             #return mu_stack
             ###
             epoch_loss, CE_epoch_loss, KL_epoch_loss, sas_epoch_loss, logP_epoch_loss = self._train_epoch(epoch, loader, penalty_weights, beta)
+            #epoch_loss, CE_epoch_loss, KL_epoch_loss, logP_epoch_loss = self._train_epoch(epoch, loader, penalty_weights, beta)
             #self.mutual_information.append(total_mutual_info)
             self.losses.append(epoch_loss)
             self.CE_loss.append(CE_epoch_loss)
@@ -300,3 +305,4 @@ class Trainer:
             self.log_epoch(start, epoch, epoch_loss, epoch_scores)
 
         dump(self.config, self.losses, self.CE_loss, self.KL_loss, self.pred_sas_loss, self.pred_logP_loss, self.beta_list, self.scores)
+        #dump(self.config, self.losses, self.CE_loss, self.KL_loss, self.pred_logP_loss, self.beta_list, self.scores)
