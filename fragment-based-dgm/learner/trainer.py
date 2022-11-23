@@ -259,7 +259,7 @@ class Trainer:
         beta.extend(list(np.zeros(10)))
         while len(beta) < num_epochs:
             #beta.extend(list((np.arange(11)) / 10))
-            beta.extend(list(np.ones(10)*0.0001))
+            beta.extend(list(np.ones(10)*0.0006))
         #beta[-10:] = list(np.zeros(10))
         beta = beta[0:num_epochs]
         print('beta:', beta)
