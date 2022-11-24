@@ -255,13 +255,14 @@ class Trainer:
         ###
         total_mutual_info_list = []
         #KL weights anneal
-        beta = []
-        beta.extend(list(np.zeros(10)))
-        while len(beta) < num_epochs:
-            #beta.extend(list((np.arange(11)) / 10))
-            beta.extend(list(np.ones(10)*0.0006))
-        #beta[-10:] = list(np.zeros(10))
-        beta = beta[0:num_epochs]
+        #beta = []
+        #beta.extend(list(np.zeros(10)))
+        #while len(beta) < num_epochs:
+        #    #beta.extend(list((np.arange(11)) / 10))
+        #    beta.extend(list(np.ones(10)*0.01))
+        ##beta[-10:] = list(np.zeros(10))
+        #beta = beta[0:num_epochs]
+        beta = [0, 0, 0, 0, 0, 0.002, 0.004, 0.006, 0.008, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01]
         print('beta:', beta)
         self.beta_list = beta
 
