@@ -72,4 +72,3 @@ To train the original model run the following line after cloning the [**Encoding
 
 ### Training the reference model
 To train the reference model, please uncomment the beta list line 267 in the `learner/trainer.py` file and comment the beta list line 265
-
