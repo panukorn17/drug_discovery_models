@@ -64,3 +64,12 @@ This includes:
 4. Sample and keep all points from the prior including plots of the latent space
 5. Moving in the latent space
 6. Checking the reconstruction of the training data
+
+### Training the original model
+To train the original model run the following line after cloning the [**Encoding_original** branch](https://github.com/panukorn17/drug_discovery_models/tree/Encoding_original/fragment-based-dgm):
+
+`python manage.py train --dataset CHEMBL --use_gpu --no_mask --batch_size 16 --embed_size 100 --num_epochs 20 --hidden_layers 1 --hidden_size 100`
+
+### Training the reference model
+To train the reference model, please uncomment the beta list line 267 in the `learner/trainer.py` file and comment the beta list line 265
+
