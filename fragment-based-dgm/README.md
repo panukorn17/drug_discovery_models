@@ -3,6 +3,13 @@
 ### The original paper and the proceedings can be found through the following links:
 Links:  [Paper](http://proceedings.mlr.press/v108/podda20a/podda20a.pdf) - [AISTATS 2020 proceedings](http://proceedings.mlr.press/v108/)
 
+Github Repository: [link](https://github.com/marcopodda/fragment-based-dgm)
+### Data and Models
+Please download the data from the following [link](https://drive.google.com/drive/folders/1rvyRWvwjaRs3b-rXx4AZBJPP4L1GE4Ge?usp=sharing) and our model, the benchmark model and the reference model from the following [link](https://drive.google.com/drive/folders/1puL7k0dikxZT3pfrPr1zSsriei-x0ew6?usp=sharing) 
+
+### Cloning this repository
+Once this repository is cloned, it is vital to download the entire folder from both links (the 'DATA' folder and the 'RUNS' folder) and unzipping them and only keeping the 'DATA' and 'RUNS' folder in the same location as the cloned repository.
+
 ### Installation
 
 Run:
@@ -16,31 +23,15 @@ The only required dependency is the latest Conda package manager, which you can 
 
 After that, you are all set up.
 
+### Training the model
+To reproduce the training of our model, run the following:
 
-### Preprocessing
+`python manage.py train --dataset CHEMBL --use_gpu --no_mask --batch_size 16 --embed_size 100 --num_epochs 20 --hidden_layers 1 --hidden_size 100`
 
-First, you need to download the data and do some preprocessing. To do this, run:
+If you do not have a gpu omit the `--use_gpu` option.
 
-`python manage.py preprocess --dataset <DATASET_NAME>`
-
-where `<DATASET_NAME>` must be `ZINC` or `PCBA`. At the moment, we support only these two.
-
-Use `python manage.py preprocess --help` to see other useful options for preprocessing.
-
-This will download the necessary files in the `DATA` folder, and will preprocess them as described in the paper.
-
-
-### Training
-
-After preprocessing, you can train the model running:
-
-`python manage.py train --dataset <DATASET_NAME>`
-
-where `<DATASET_NAME>` is defined as described above.
-
-If you wish to train using a GPU, add the `--use_gpu` option.
-
-Check out `python manage.py train --help` to see all the other hyperparameters you can change.
+Other options that start with `--` detail the model hyperparameters. To review all the hyperparameters that can be changed, please view the `utils/parser.py` or check out `python manage.py train --help`. 
+It is however, vital to keep the hidden size hyperparameter as 100 respectively because the pre-trained model used to train our model has a size of 100
 
 Training the model will create folder `RUNS` with the following structure:
 
@@ -68,47 +59,13 @@ RUNS
 
 the `<date>@<time>-<hostname>-<dataset>` folder is a snapshot of your experiment, which will contain all the data collected during training.
 
-You can monitor the progress of training using tensorboardX, just run
+### Reproducing the plots and results from our model
+open jupyter notebook, specifically the `Optimisation.ipynb` file and follow the step-by-step process.
 
-`tensorboard --logdir RUNS`
-
-during training and check the `localhost:6006` page in your favorite browser.
-
-
-### Sampling
-
-After the model is trained, you can sample from it using
-
-`python manage.py sample --run <RUN_PATH>`
-
-where `<RUN_PATH>` is the path to the run directory of the experiment, which will be something like `RUNS/<date>@<time>-<hostname>-<dataset>` (`<date>`, `<time>`, `<hostname>`, `<dataset>` are placeholders of the actual data).
-
-Check out `python manage.py sample --help` to see all the sampling options.
-
-You will find your samples in the `results/samples` folder on your experiment run directory.
-
-
-### Postprocessing
-
-After you have sampled the model, you wish to conduct some common postprocessing operations such as calculate statistics on the samples, aggregate multiple sample files and the test data in one big file for plotting, etc.
-
-Then, you need to run:
-
-`python manage.py postprocess --run <RUN_PATH>`
-
-where `<RUN_PATH>` is obtained as described above.
-
-Check out `python manage.py postprocess --help` to see all available options.
-
-
-### Plotting
-
-If you wish to obtain similar figures as the ones in the paper on your samples, just run:
-
-`python manage.py plot --run <RUN_PATH>`
-
-where `<RUN_PATH>` is defined as described above.
-
-### Samples
-
-You can find the 20k SMILES samples used in the paper for the analysis in the SAMPLES folder.
+This includes:
+1. Running the training set through the model for latent space and box plots
+2. Plotting latent space PCA for the training set
+3. Sample valid molecules and plots of the latent space alongside box plots of sampled molecules
+4. Sample and keep all points from the prior including plots of the latent space
+5. Moving in the latent space
+6. Checking the reconstruction of the training data
