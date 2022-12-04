@@ -1,5 +1,6 @@
-# Code for the paper "A Deep Generative Model for Fragment-Based Molecule Generation" (AISTATS 2020)
-
+## Code for the Dissertation "A Deep Fragment-Based Generative Model for De Novo Molecular Design"
+### This code is adapted from the publicly available code by Podda et al. (2020) for the paper "A Deep Generative Model for Fragment-Based Molecule Generation" (AISTATS 2020)
+### The original paper and the proceedings can be found through the following links:
 Links:  [Paper](http://proceedings.mlr.press/v108/podda20a/podda20a.pdf) - [AISTATS 2020 proceedings](http://proceedings.mlr.press/v108/)
 
 ### Installation
